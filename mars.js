@@ -37,29 +37,29 @@ controls.zoomSpeed = 0.5;
 // controls.target.set(0, 0, 0);
 // controls.update();
 
-const loader = new THREE.GLTFLoader()
+// const loader = new THREE.GLTFLoader()
 
-const dracoLoader = new THREE.DRACOLoader();
-dracoLoader.setDecoderPath('/examples/js/libs/draco/gltf');
-loader.setDRACOLoader(dracoLoader);
+// const dracoLoader = new THREE.DRACOLoader();
+// dracoLoader.setDecoderPath('/examples/js/libs/draco/gltf');
+// loader.setDRACOLoader(dracoLoader);
 
-loader.load(
-  'models/mars.gltf',
-  (gltf) => {
-    model = gltf.scene
-    model.position.set(0, 0, 0);
-    model.scale.set(1.0, 1.0, 1.0);
-    // model.quaternion.copy(targetRotation);
-    scene.add(model);
-    render();
-  },
-  (xhr) => {
-    console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-  },
-  (error) => {
-    console.log(error)
-  }
-)
+// loader.load(
+//   'models/mars.gltf',
+//   (gltf) => {
+//     model = gltf.scene
+//     model.position.set(0, 0, 0);
+//     model.scale.set(1.0, 1.0, 1.0);
+//     // model.quaternion.copy(targetRotation);
+//     scene.add(model);
+//     render();
+//   },
+//   (xhr) => {
+//     console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+//   },
+//   (error) => {
+//     console.log(error)
+//   }
+// )
 
 const radius = 0.5;
 const segments = 32;
