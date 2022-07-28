@@ -1,3 +1,4 @@
+const container = document.querySelector(".container")
 const canvas = document.getElementById('mars');
 const scene = new THREE.Scene();
 let model = null;
@@ -28,7 +29,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 //we have to reposition the camera as both the scene and camera at origin.
 camera.position.set(0, 0, 6);
 
-const controls = new THREE.TrackballControls(camera, canvas);
+const controls = new THREE.TrackballControls(camera, container);
 controls.maxDistance = 6;
 controls.minDistance = 1.5;
 controls.zoomSpeed = 0.5;
@@ -107,7 +108,7 @@ function onWindowResize() {
 }
 
 function onScrollWheel() {
-  mars.rotation.y += 0.1;
+  mars.rotation.y += 0.001;
 }
 
 window.addEventListener('resize', onWindowResize);
@@ -120,7 +121,6 @@ function render() {
   // model.setRotationFromQuaternion(model.quaternion);
   requestAnimationFrame(render);
   renderer.render(scene, camera);
-
 }
 render();
 
