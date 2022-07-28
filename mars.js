@@ -33,8 +33,10 @@ const controls = new THREE.TrackballControls(camera, container);
 controls.maxDistance = 6;
 controls.minDistance = 1.5;
 controls.zoomSpeed = 0.5;
+controls.noRotate = true;
+
 // controls.radius = 1;
-// controls.target.set(0, 0, 0);
+// controls.target.set(1, 0, 0);
 // controls.update();
 
 // const loader = new THREE.GLTFLoader()
@@ -81,20 +83,15 @@ const material = new THREE.MeshPhongMaterial({
 
 const mars = new THREE.Mesh(geometry, material);
 
+mars.position.set(0, 0, 0);
 scene.add(mars);
 
-const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.png');
+const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.jpg');
+console.log(galaxyImg);
 
-const starGeometry = new THREE.SphereGeometry(80, 64, 64);
+scene.background = galaxyImg;
 
-const starMaterial = new THREE.MeshBasicMaterial({
-  map: galaxyImg,
-  side: THREE.BackSide
-})
-
-const stars = new THREE.Mesh(starGeometry, starMaterial);
-
-scene.add(stars);
+// scene.add(stars);
 
 function onWindowResize() {
 
@@ -104,11 +101,25 @@ function onWindowResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 
   render();
-
 }
 
-function onScrollWheel() {
+function onScrollWheel(e) {
   mars.rotation.y += 0.001;
+  if (e.deltaY < 0 && camera.position.distanceTo(controls.target) > 1.5) {
+    // scrolling up
+    mars.position.x += 0.03;
+  }
+  else if (e.deltaY > 0 && camera.position.distanceTo(controls.target) < 6) {
+    // scrolling down
+    mars.position.x -= 0.03;
+  }
+  // console.log(camera.position.distanceTo(controls.target));
+  // if (camera.position.distanceTo(controls.target) > 1.5) {
+
+  // }
+  //  else if (camera.position.distanceTo(controls.target) < 6) {
+  //   mars.position.x -= 0.03;
+  // }
 }
 
 window.addEventListener('resize', onWindowResize);
