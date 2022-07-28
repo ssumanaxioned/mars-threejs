@@ -15,7 +15,7 @@ scene.add(light1);
 // perpectve we see closer object bigger and far object smaller.
 //1. perpective angle
 //2. aspect ratio innnerwidth/innerheight
-const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.25, 100);
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 100);
 
 //rendering engine
 //anitalias smoothing the corners
@@ -81,6 +81,19 @@ const material = new THREE.MeshPhongMaterial({
 const mars = new THREE.Mesh(geometry, material);
 
 scene.add(mars);
+
+const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.png');
+
+const starGeometry = new THREE.SphereGeometry(80, 64, 64);
+
+const starMaterial = new THREE.MeshBasicMaterial({
+  map: galaxyImg,
+  side: THREE.BackSide
+})
+
+const stars = new THREE.Mesh(starGeometry, starMaterial);
+
+scene.add(stars);
 
 function onWindowResize() {
 
