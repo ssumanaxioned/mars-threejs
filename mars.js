@@ -29,7 +29,6 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 camera.position.set(0, 0, 6);
 
 const controls = new THREE.TrackballControls(camera, canvas);
-controls.enableDamping = false;
 controls.maxDistance = 6;
 controls.minDistance = 1.5;
 controls.zoomSpeed = 0.5;
@@ -101,12 +100,12 @@ function onScrollWheel() {
 window.addEventListener('resize', onWindowResize);
 //animating the object
 function render() {
-  requestAnimationFrame(render);
+  controls.update();
+  mars.rotation.y += 0.001;
   window.addEventListener("wheel", onScrollWheel);
   // model.rotateOnAxis(axis, 0.001);
   // model.setRotationFromQuaternion(model.quaternion);
-  mars.rotation.y += 0.001;
-  controls.update();
+  requestAnimationFrame(render);
   renderer.render(scene, camera);
 
 }
