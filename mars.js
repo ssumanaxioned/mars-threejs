@@ -102,25 +102,38 @@ function onWindowResize() {
 
   render();
 }
-
+let scrollPercent = 0
 function onScrollWheel(e) {
-  mars.rotation.y += 0.001;
-  if (e.deltaY < 0 && camera.position.distanceTo(controls.target) > 1.5) {
-    // scrolling up
+  mars.rotation.y += 0.01;
+  let distance = camera.position.distanceTo(controls.target)
+  scrollPercent = Math.floor(((distance - 1.5) / 4.5) * 100);
+  if (e.deltaY < 0 && distance > 1.5) {
     mars.position.x += 0.03;
   }
-  else if (e.deltaY > 0 && camera.position.distanceTo(controls.target) < 6) {
+
+  else if (e.deltaY > 0 && distance < 6) {
     // scrolling down
     mars.position.x -= 0.03;
+    if (90 < scrollPercent && scrollPercent < 100) {
+      mars.position.x = 0;
+    }
   }
-  // console.log(camera.position.distanceTo(controls.target));
-  // if (camera.position.distanceTo(controls.target) > 1.5) {
 
-  // }
-  //  else if (camera.position.distanceTo(controls.target) < 6) {
-  //   mars.position.x -= 0.03;
-  // }
+  console.log(scrollPercent, "scrollPercent");
+  console.log(95 <= scrollPercent <= 100);
+  console.log("mars", mars.position);
+  console.log(distance);
 }
+
+
+
+// document.body.onscroll = () => {
+//   //calculate the current scroll progress as a percentage
+//   scrollPercent =
+//     (camera.position.distanceTo(controls.target) / controls.minDistance) * 100;
+
+//   console.log(scrollPercent, "scrollPercent");
+// }
 
 window.addEventListener('resize', onWindowResize);
 //animating the object
