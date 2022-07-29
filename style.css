@@ -6,20 +6,25 @@ body {
 }
 
 .banner {
-  position: relative;
   color: #fff;
+  position: relative;
+}
+
+.wrapper {
+  width: 78.7%;
+  margin: 0 auto;
 }
 
 .banner-text {
-  width: 55%;
-  padding: 13rem 12.8rem;
+  width: 57%;
+  padding: 13rem 0;
   position: absolute;
   z-index: 1;
 }
 
 .heading { 
   color: #fff;
-  font-size: 8rem;
+  font-size: 7.5rem;
   font-weight: 400;
   user-select: none;
   animation: slideUp 2s ease-in-out;
@@ -74,3 +79,4 @@ canvas {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
