@@ -1,8 +1,6 @@
-* { overflow: hidden; }
-
 body {
   margin: 0;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: "Space Grotesk", sans-serif;
 }
 
 .banner {
@@ -16,13 +14,14 @@ body {
 }
 
 .banner-text {
-  width: 57%;
-  padding: 13rem 0;
+  width: 65%;
   position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 1;
 }
 
-.heading { 
+.heading {
   color: #fff;
   font-size: 7.5rem;
   font-weight: 400;
@@ -52,12 +51,14 @@ body {
 .join-cta::after {
   padding-left: 20px;
   content: "\f550";
-  font-family: 'FontAwesome';
+  font-family: "FontAwesome";
   font-size: 1.2rem;
-  opacity: .7;
+  opacity: 0.7;
 }
 
-.purple { color: #a701e3; }
+.purple {
+  color: #a701e3;
+}
 
 canvas {
   width: 100%;
@@ -76,7 +77,10 @@ canvas {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
-
