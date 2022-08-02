@@ -217,4 +217,29 @@ function render() {
 }
 render();
 
-window.scrollTo({ top: 0, behavior: 'smooth' })
+window.scrollTo({ top: 0, behavior: 'smooth' });
+
+// JS functionality for text animation
+
+const banner = document.querySelector('.banner');
+const client = document.querySelectorAll('.client')
+
+const docElem = [banner, ...client]
+
+console.log(docElem)
+
+const options =  { 
+  rootMargin: '10px',
+  threshold: .4
+}
+
+const handleIntersect = (entries) => {
+  entries.forEach(entry => {
+    entry.target.classList.toggle('reveal', entry.isIntersecting)
+  })
+}
+
+let observer = new IntersectionObserver(handleIntersect, options)
+
+docElem.forEach(elem => observer.observe(elem))
+
