@@ -3,6 +3,9 @@ const canvas = document.getElementById('mars');
 const scene = new THREE.Scene();
 let model = null;
 
+// const gridHelper = new THREE.GridHelper(10, 10, 0xaec6cf, 0xaec6cf)
+// scene.add(gridHelper);
+
 // paramters color and intensity
 const light = new THREE.AmbientLight(0xffffff, 1)
 light.position.z = 5.0;
@@ -16,7 +19,7 @@ scene.add(light1);
 // perpectve we see closer object bigger and far object smaller.
 //1. perpective angle
 //2. aspect ratio innnerwidth/innerheight
-const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 100);
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
 
 //rendering engine
 //anitalias smoothing the corners
@@ -27,14 +30,15 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 
 // const targetRotation = null;
 //we have to reposition the camera as both the scene and camera at origin.
-camera.position.set(0, 0, 6);
+camera.position.set(0, 0, 10);
 
-const controls = new THREE.TrackballControls(camera, container);
-controls.maxDistance = 6;
-controls.minDistance = 1.5;
-controls.zoomSpeed = 0.5;
-controls.noRotate = true;
-
+// const controls = new THREE.TrackballControls(camera, container);
+// controls.maxDistance = 6;
+// controls.minDistance = 1.5;
+// controls.zoomSpeed = 0.8;
+// controls.noRotate = true;
+// controls.enableDamping = true;
+// controls.dampingFactor = 0.05;
 // controls.radius = 1;
 // controls.target.set(1, 0, 0);
 // controls.update();
@@ -82,12 +86,12 @@ const material = new THREE.MeshPhongMaterial({
 })
 
 const mars = new THREE.Mesh(geometry, material);
+mars.anisotropy = 16;
 
 mars.position.set(0, 0, 0);
 scene.add(mars);
 
 const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.jpg');
-console.log(galaxyImg);
 
 scene.background = galaxyImg;
 
@@ -102,47 +106,112 @@ function onWindowResize() {
 
   render();
 }
-let scrollPercent = 0
-function onScrollWheel(e) {
-  mars.rotation.y += 0.01;
-  let distance = camera.position.distanceTo(controls.target)
-  scrollPercent = Math.floor(((distance - 1.5) / 4.5) * 100);
-  if (e.deltaY < 0 && distance > 1.5) {
-    mars.position.x += 0.03;
-  }
 
-  else if (e.deltaY > 0 && distance < 6) {
-    // scrolling down
-    mars.position.x -= 0.03;
-    if (90 < scrollPercent && scrollPercent < 100) {
-      mars.position.x = 0;
-    }
-  }
-
-  console.log(scrollPercent, "scrollPercent");
-  console.log(95 <= scrollPercent <= 100);
-  console.log("mars", mars.position);
-  console.log(distance);
+/* Liner Interpolation
+ * lerp(min, max, ratio)
+ * eg,
+ * lerp(20, 60, .5)) = 40
+ * lerp(-20, 60, .5)) = 20
+ * lerp(20, 60, .75)) = 50
+ * lerp(-20, -10, .1)) = -.19
+ */
+function lerp(x, y, a) {
+  return (1 - a) * x + a * y;
 }
 
+// Used to fit the lerps to start and end at specific scrolling percentages
+function scalePercent(start, end) {
+  return (scrollPercent - start) / (end - start)
+}
 
+let scroll = true;
 
-// document.body.onscroll = () => {
-//   //calculate the current scroll progress as a percentage
-//   scrollPercent =
-//     (camera.position.distanceTo(controls.target) / controls.minDistance) * 100;
+function onScrollWheel(e) {
+  // mars.rotation.y += 0.05;
+  // let distance = camera.position.distanceTo(controls.target)
+  // scrollPercent = Math.floor(((distance - 1.5) / 4.5) * 100);
+  console.log(e.deltaY, "scroll");
+  if (e.deltaY > 0) {
+    // scrolling down
+    scroll = true;
+  }
+  else if (e.deltaY < 0) {
+    scroll = false;
+  }
+}
 
-//   console.log(scrollPercent, "scrollPercent");
+// console.log(scrollPercent, "scrollPercent");
+// console.log(95 <= scrollPercent <= 100);
+// console.log("mars", mars.position);
+
 // }
+
+const animationScripts = [];
+
+animationScripts.push({
+  start: 0,
+  end: 100,
+  func: () => {
+    // camera.lookAt(mars.position)
+    mars.position.x = lerp(0, .5, scalePercent(0, 100))
+    mars.position.z = lerp(0, 8.5, scalePercent(0, 100))
+    if (scroll) {
+      mars.rotation.y += 0.01;
+    } else {
+      mars.rotation.y -= 0.01;
+    }
+  }
+})
+
+animationScripts.push({
+  start: 40,
+  end: 70,
+  func: () => {
+    if (scroll) {
+      mars.rotation.y += 0.008;
+    } else {
+      mars.rotation.y -= 0.008;
+    }
+  }
+})
+
+
+function playScrollAnimations() {
+  animationScripts.forEach((a) => {
+    if (scrollPercent > a.start && scrollPercent < a.end) {
+      // mars.rotation.y += 0.005;
+      a.func()
+    }
+    else if (scrollPercent === a.end || scrollPercent === a.start) {
+      mars.rotation.y += 0.005;
+    }
+  })
+}
+
+let scrollPercent = 0;
+
+document.body.onscroll = () => {
+  //calculate the current scroll progress as a percentage
+  scrollPercent =
+    ((document.documentElement.scrollTop || document.body.scrollTop) /
+      ((document.documentElement.scrollHeight ||
+        document.body.scrollHeight) -
+        document.documentElement.clientHeight)) *
+    100
+    ;
+
+  console.log(scrollPercent.toFixed(2), "scrollPercent");
+}
 
 window.addEventListener('resize', onWindowResize);
 //animating the object
 function render() {
-  controls.update();
-  mars.rotation.y += 0.001;
+  // controls.update();
+
   window.addEventListener("wheel", onScrollWheel);
   // model.rotateOnAxis(axis, 0.001);
   // model.setRotationFromQuaternion(model.quaternion);
+  playScrollAnimations();
   requestAnimationFrame(render);
   renderer.render(scene, camera);
 }
