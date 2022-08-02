@@ -33,8 +33,8 @@ canvas {
 }
 
 .banner, .client  {
-  transition: opacity .7s ease-in-out;
-  /* opacity: .1; */
+  transition: opacity 1s ease-in-out;
+  opacity: .3;
 }
 
 .heading {
@@ -45,7 +45,7 @@ canvas {
 }
 
 .info {
-  color: #2C3639;
+  color: #F9F5EB;
   font-size: 2rem;
   font-weight: 300;
 }
