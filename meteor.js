@@ -2,15 +2,8 @@ const container = document.querySelector(".container")
 const canvas = document.getElementById('mars');
 const scene = new THREE.Scene();
 let model = null;
+let scalePercentVal;;
 const gui = new dat.GUI();
-
-
-console.log(gui)
-// const gridHelper = new THREE.GridHelper(10, 10, 0xaec6cf, 0xaec6cf)
-// scene.add(gridHelper);
-
-// const color = new THREE.Color('white', 0);
-// scene.background = null;
 
 const light = new THREE.AmbientLight(0xffffff, 1)
 light.position.z = 5.0;
@@ -18,7 +11,6 @@ scene.add(light);
 
 const light1 = new THREE.DirectionalLight(0xffffff, 0.5)
 light1.position.z = 5;
-// light1.castShadow = true;
 scene.add(light1);
 
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
@@ -42,9 +34,15 @@ loader.load(
   'models/meteor.gltf',
   (gltf) => {
     model = gltf.scene
-    model.position.set(0, -3, 0);
+    model.position.set(4.5, 1.2, 0);
     model.scale.set(0.02, 0.02, 0.02);
     model.rotation.x = 0;
+    gui.add(model.position, 'x', -10, 10).name('X position')
+    gui.add(model.position, 'y', -10, 10).name('Y position')
+    gui.add(model.position, 'z', -10, 10).name('Z position')
+    // gui.add(model.scale, 'x', 0, .1).name('X position')
+    // gui.add(model.scale, 'y', 0, .1).name('Y position')
+    // gui.add(model.scale, 'z', 0, .1).name('Z position')
     scene.add(model);
     render();
   },
@@ -62,7 +60,8 @@ scene.background = galaxyImg;
 
 let scroll = false;
 function onScrollWheel(e) {
-  // console.log(e.deltaY, "scroll");
+  console.log(model.position)
+
   if (e.deltaY > 0) {
     // scrolling down
     scroll = true;
@@ -78,7 +77,7 @@ function lerp(x, y, a) {
 
 // Used to fit the lerps to start and end at specific scrolling percentages
 function scalePercent(start, end) {
-  return (scrollPercent - start) / (end - start)
+  return scalePercentVal = (scrollPercent - start) / (end - start)
 }
 
 const animationScripts = [];
@@ -87,10 +86,21 @@ animationScripts.push({
   start: 0,
   end: 100,
   func: () => {
-    // camera.lookAt(model.position)
-    model.position.x = lerp(0, 1, scalePercent(0, 100))
-    model.position.y = lerp(-3, 0, scalePercent(0, 100))
-    model.position.z = lerp(0, 7.21, scalePercent(0, 100))
+
+    if (scrollPercent < 50) {
+      model.position.x = lerp(4.5, -.5, scalePercent(0, 50));
+      model.position.y = lerp(1.2, -1, scalePercent(0, 50))
+      model.position.z = lerp(0, 4.8, scalePercent(0, 50))
+      console.log('left')
+    }
+    
+    else {
+      model.position.x = lerp(-.5, 1, scalePercent(50, 100));
+      model.position.y = lerp(-1, 0, scalePercent(50, 100))
+      model.position.z = lerp(4.8, 7.2, scalePercent(50, 100))
+    }
+    
+   
     if (scroll) {
       model.rotation.y += 0.01;
     } else {
@@ -98,6 +108,7 @@ animationScripts.push({
     }
   }
 })
+
 
 animationScripts.push({
   start: 40,
@@ -147,7 +158,6 @@ function onWindowResize() {
   camera.updateProjectionMatrix();
 
   renderer.setSize(window.innerWidth, window.innerHeight);
-
   render();
 }
 
