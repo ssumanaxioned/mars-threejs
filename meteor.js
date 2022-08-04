@@ -2,8 +2,7 @@ const container = document.querySelector(".container")
 const canvas = document.getElementById('mars');
 const scene = new THREE.Scene();
 let model = null;
-let scalePercentVal;;
-const gui = new dat.GUI();
+// const gui = new dat.GUI();
 
 const light = new THREE.AmbientLight(0xffffff, 1)
 light.position.z = 5.0;
@@ -37,9 +36,9 @@ loader.load(
     model.position.set(4.5, 1.2, 0);
     model.scale.set(0.02, 0.02, 0.02);
     model.rotation.x = 0;
-    gui.add(model.position, 'x', -10, 10).name('X position')
-    gui.add(model.position, 'y', -10, 10).name('Y position')
-    gui.add(model.position, 'z', -10, 10).name('Z position')
+    // gui.add(model.position, 'x', -10, 10).name('X position')
+    // gui.add(model.position, 'y', -10, 10).name('Y position')
+    // gui.add(model.position, 'z', -10, 10).name('Z position')
     // gui.add(model.scale, 'x', 0, .1).name('X position')
     // gui.add(model.scale, 'y', 0, .1).name('Y position')
     // gui.add(model.scale, 'z', 0, .1).name('Z position')
