@@ -2,14 +2,14 @@ const container = document.querySelector(".container")
 const canvas = document.getElementById('mars');
 const scene = new THREE.Scene();
 let model = null;
-// const gui = new dat.GUI();
+const gui = new dat.GUI();
 
 const light = new THREE.AmbientLight(0xffffff, 1)
-light.position.z = 5.0;
+light.position.z = 5;
 scene.add(light);
 
-const light1 = new THREE.DirectionalLight(0xffffff, 0.5)
-light1.position.z = 5;
+const light1 = new THREE.DirectionalLight(0xffffff, 1)
+light1.position.z = 15;
 scene.add(light1);
 
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
@@ -35,7 +35,7 @@ loader.load(
     model = gltf.scene
     model.position.set(4.5, 1.2, 0);
     model.scale.set(0.02, 0.02, 0.02);
-    model.rotation.x = 0;
+    // model.rotation.x = 0;
     // gui.add(model.position, 'x', -10, 10).name('X position')
     // gui.add(model.position, 'y', -10, 10).name('Y position')
     // gui.add(model.position, 'z', -10, 10).name('Z position')
@@ -59,14 +59,15 @@ scene.background = galaxyImg;
 
 let scroll = false;
 function onScrollWheel(e) {
-  console.log(model.position)
-
+  console.log(scrollPercent);
   if (e.deltaY > 0) {
     // scrolling down
-    scroll = true;
+  if(scrollPercent < 100) (model.rotation.y += 0.03)
+  scroll = true;
   }
   else if (e.deltaY < 0) {
-    scroll = false;
+  if(scrollPercent > 0) (model.rotation.y -= 0.03)
+  scroll = false;
   }
 }
 
@@ -76,7 +77,7 @@ function lerp(x, y, a) {
 
 // Used to fit the lerps to start and end at specific scrolling percentages
 function scalePercent(start, end) {
-  return scalePercentVal = (scrollPercent - start) / (end - start)
+  return (scrollPercent - start) / (end - start)
 }
 
 const animationScripts = [];
@@ -85,26 +86,31 @@ animationScripts.push({
   start: 0,
   end: 100,
   func: () => {
-
-    if (scrollPercent < 50) {
-      model.position.x = lerp(4.5, -.5, scalePercent(0, 50));
-      model.position.y = lerp(1.2, -1, scalePercent(0, 50))
-      model.position.z = lerp(0, 4.8, scalePercent(0, 50))
-      console.log('left')
-    }
-    
-    else {
-      model.position.x = lerp(-.5, 1, scalePercent(50, 100));
-      model.position.y = lerp(-1, 0, scalePercent(50, 100))
-      model.position.z = lerp(4.8, 7.2, scalePercent(50, 100))
-    }
-    
-   
     if (scroll) {
-      model.rotation.y += 0.01;
+      model.rotation.y += 0.008;
     } else {
-      model.rotation.y -= 0.01;
+      model.rotation.y -= 0.008;
     }
+  }
+})
+
+animationScripts.push({
+  start: 0,
+  end: 50,
+  func: () => {
+    model.position.x = lerp(4.5, -.5, scalePercent(0, 50));
+    model.position.y = lerp(1.2, -1, scalePercent(0, 50))
+    model.position.z = lerp(0, 4.8, scalePercent(0, 50))
+  }
+})
+
+animationScripts.push({
+  start: 50,
+  end: 100,
+  func: () => {
+    model.position.x = lerp(-.5, 1, scalePercent(50, 100));
+    model.position.y = lerp(-1, 0, scalePercent(50, 100))
+    model.position.z = lerp(4.8, 7.2, scalePercent(50, 100))
   }
 })
 
@@ -165,7 +171,6 @@ function render() {
   // controls.update();
   // let axis = model.quaternion;
   // model.rotateOnAxis(new THREE.Vector3(0, 1, 0), 0.01);
-
   window.addEventListener("wheel", onScrollWheel);
   playScrollAnimations();
   requestAnimationFrame(render);
