@@ -1,3 +1,5 @@
+gsap.registerPlugin(MotionPathPlugin)
+
 const container = document.querySelector(".container")
 const canvas = document.getElementById('mars');
 const scene = new THREE.Scene();
@@ -85,20 +87,28 @@ animationScripts.push({
   start: 0,
   end: 100,
   func: () => {
+    const oldX = model.position.x;
+    const oldY = model.position.y;
+    const oldZ = model.position.z;
+
+    let newX;
+    let newY;
+    let newZ;
 
     if (scrollPercent < 50) {
-      model.position.x = lerp(4.5, -.5, scalePercent(0, 50));
-      model.position.y = lerp(1.2, -1, scalePercent(0, 50))
-      model.position.z = lerp(0, 4.8, scalePercent(0, 50))
+      newX = lerp(4.5, -.5, scalePercent(0, 50));
+      newY = lerp(1.2, -1, scalePercent(0, 50))
+      newZ = lerp(0, 4.8, scalePercent(0, 50))
       console.log('left')
+    } else {
+      newX = lerp(-.5, 1, scalePercent(50, 100));
+      newY = lerp(-1, 0, scalePercent(50, 100))
+      newZ = lerp(4.8, 7.2, scalePercent(50, 100))
     }
     
-    else {
-      model.position.x = lerp(-.5, 1, scalePercent(50, 100));
-      model.position.y = lerp(-1, 0, scalePercent(50, 100))
-      model.position.z = lerp(4.8, 7.2, scalePercent(50, 100))
-    }
-    
+    gsap.to(model.position, {duration: 0.15, motionPath: {
+      path: [{x: oldX, y: oldY, z: oldZ}, {x: newX, y: newY, z: newZ}]
+    }});
    
     if (scroll) {
       model.rotation.y += 0.01;
