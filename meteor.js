@@ -2,6 +2,9 @@ gsap.registerPlugin(MotionPathPlugin, ScrollTrigger)
 
 const container = document.querySelector(".container")
 const canvas = document.getElementById('mars');
+const svg = document.querySelector("svg");
+console.log(`Canvas: x: ${canvas.getBoundingClientRect().width}, y: ${canvas.getBoundingClientRect().height}`);
+
 const scene = new THREE.Scene();
 let model = null;
 // const gui = new dat.GUI();
@@ -23,7 +26,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setClearColor(0xffffff, 0);
 
-camera.position.set(0, 0, 100);
+camera.position.set(0, 0, 10);
 
 const loader = new THREE.GLTFLoader();
 
@@ -36,7 +39,7 @@ loader.load(
   (gltf) => {
     model = gltf.scene
     model.position.set(4.5, 1.2, 0);
-    model.scale.set(0.1, 0.1, 0.1);
+    model.scale.set(0.02, 0.02, 0.02);
     model.rotation.x = 0;
     // gui.add(model.position, 'x', -10, 10).name('X position')
     // gui.add(model.position, 'y', -10, 10).name('Y position')
@@ -49,18 +52,18 @@ loader.load(
 
     var action = gsap.timeline({
       scrollTrigger: {
-        trigger: "body",
+        trigger: ".container",
         start: "top top",
         end: "bottom bottom",
         scrub: true,
-        markers: true
-      },
-      onUpdate: () => { {console.log(model.position); } }
+        markers: true,
+        onUpdate: setModelCoordinates
+      }
     });
       
     action.to(model.position, {
       motionPath: {
-        path: "M 1 115 C -492 128 -663 288 -880 529 C -849 611 -702 640 -576 609 C -372 551 -207 486 0 343",
+        path: "#path",
         align: "#path"
       }
     });
@@ -72,6 +75,12 @@ loader.load(
     console.log(error)
   }
 )
+
+const setModelCoordinates = () => {
+  console.log(`x: ${model.position.x}, y: ${model.position.y}`);
+  model.position.x = (model.position.x / canvas.getBoundingClientRect().width) * 2 - 1;
+  model.position.y = -(model.position.y / canvas.getBoundingClientRect().height) * 2 + 1;
+}
 
 const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.jpg');
 
