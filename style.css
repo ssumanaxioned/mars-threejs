@@ -37,6 +37,16 @@ canvas {
   opacity: .3;
 }
 
+svg {
+  width: 60%;
+  height: calc(100vh - 0.83em);
+  position: fixed;
+  top: 0.83em;
+  left: 50%;
+  font-size: 9rem;
+  transform: translate(-50%, 0);
+}
+
 .heading {
   font-size: 9rem;
   font-weight: 200;

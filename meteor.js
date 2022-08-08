@@ -1,4 +1,4 @@
-gsap.registerPlugin(MotionPathPlugin)
+gsap.registerPlugin(MotionPathPlugin, ScrollTrigger)
 
 const container = document.querySelector(".container")
 const canvas = document.getElementById('mars');
@@ -23,7 +23,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setClearColor(0xffffff, 0);
 
-camera.position.set(0, 0, 10);
+camera.position.set(0, 0, 100);
 
 const loader = new THREE.GLTFLoader();
 
@@ -36,7 +36,7 @@ loader.load(
   (gltf) => {
     model = gltf.scene
     model.position.set(4.5, 1.2, 0);
-    model.scale.set(0.02, 0.02, 0.02);
+    model.scale.set(0.1, 0.1, 0.1);
     model.rotation.x = 0;
     // gui.add(model.position, 'x', -10, 10).name('X position')
     // gui.add(model.position, 'y', -10, 10).name('Y position')
@@ -46,6 +46,24 @@ loader.load(
     // gui.add(model.scale, 'z', 0, .1).name('Z position')
     scene.add(model);
     render();
+
+    var action = gsap.timeline({
+      scrollTrigger: {
+        trigger: "body",
+        start: "top top",
+        end: "bottom bottom",
+        scrub: true,
+        markers: true
+      },
+      onUpdate: () => { {console.log(model.position); } }
+    });
+      
+    action.to(model.position, {
+      motionPath: {
+        path: "M 1 115 C -492 128 -663 288 -880 529 C -849 611 -702 640 -576 609 C -372 551 -207 486 0 343",
+        align: "#path"
+      }
+    });
   },
   (xhr) => {
     // console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
@@ -61,7 +79,7 @@ scene.background = galaxyImg;
 
 let scroll = false;
 function onScrollWheel(e) {
-  console.log(model.position)
+  // console.log(model.position)
 
   if (e.deltaY > 0) {
     // scrolling down
@@ -87,28 +105,24 @@ animationScripts.push({
   start: 0,
   end: 100,
   func: () => {
-    const oldX = model.position.x;
-    const oldY = model.position.y;
-    const oldZ = model.position.z;
+    // const oldX = model.position.x;
+    // const oldY = model.position.y;
+    // const oldZ = model.position.z;
 
-    let newX;
-    let newY;
-    let newZ;
+    // let newX;
+    // let newY;
+    // let newZ;
 
-    if (scrollPercent < 50) {
-      newX = lerp(4.5, -.5, scalePercent(0, 50));
-      newY = lerp(1.2, -1, scalePercent(0, 50))
-      newZ = lerp(0, 4.8, scalePercent(0, 50))
-      console.log('left')
-    } else {
-      newX = lerp(-.5, 1, scalePercent(50, 100));
-      newY = lerp(-1, 0, scalePercent(50, 100))
-      newZ = lerp(4.8, 7.2, scalePercent(50, 100))
-    }
-    
-    gsap.to(model.position, {duration: 0.15, motionPath: {
-      path: [{x: oldX, y: oldY, z: oldZ}, {x: newX, y: newY, z: newZ}]
-    }});
+    // if (scrollPercent < 50) {
+    //   newX = lerp(4.5, -.5, scalePercent(0, 50));
+    //   newY = lerp(1.2, -1, scalePercent(0, 50))
+    //   newZ = lerp(0, 4.8, scalePercent(0, 50))
+    //   console.log('left')
+    // } else {
+    //   newX = lerp(-.5, 1, scalePercent(50, 100));
+    //   newY = lerp(-1, 0, scalePercent(50, 100))
+    //   newZ = lerp(4.8, 7.2, scalePercent(50, 100))
+    // }
    
     if (scroll) {
       model.rotation.y += 0.01;
