@@ -77,9 +77,12 @@ loader.load(
 )
 
 const setModelCoordinates = () => {
-  console.log(`x: ${model.position.x}, y: ${model.position.y}`);
-  model.position.x = (model.position.x / canvas.getBoundingClientRect().width) * 2 - 1;
-  model.position.y = -(model.position.y / canvas.getBoundingClientRect().height) * 2 + 1;
+  const screenX = model.position.x;
+  const screenY = model.position.y;
+
+  model.position.x = ((screenX / canvas.getBoundingClientRect().width) * 2 - 1) * 7;
+  model.position.y = (-(screenY / canvas.getBoundingClientRect().height) * 2 + 1) * (7 / (canvas.getBoundingClientRect().width / canvas.getBoundingClientRect().height));
+  model.position.z = 0.5;
 }
 
 const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.jpg');
@@ -114,25 +117,6 @@ animationScripts.push({
   start: 0,
   end: 100,
   func: () => {
-    // const oldX = model.position.x;
-    // const oldY = model.position.y;
-    // const oldZ = model.position.z;
-
-    // let newX;
-    // let newY;
-    // let newZ;
-
-    // if (scrollPercent < 50) {
-    //   newX = lerp(4.5, -.5, scalePercent(0, 50));
-    //   newY = lerp(1.2, -1, scalePercent(0, 50))
-    //   newZ = lerp(0, 4.8, scalePercent(0, 50))
-    //   console.log('left')
-    // } else {
-    //   newX = lerp(-.5, 1, scalePercent(50, 100));
-    //   newY = lerp(-1, 0, scalePercent(50, 100))
-    //   newZ = lerp(4.8, 7.2, scalePercent(50, 100))
-    // }
-   
     if (scroll) {
       model.rotation.y += 0.01;
     } else {
