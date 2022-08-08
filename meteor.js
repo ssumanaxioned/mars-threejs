@@ -9,7 +9,7 @@ light.position.z = 5;
 scene.add(light);
 
 const light1 = new THREE.DirectionalLight(0xffffff, 1)
-light1.position.z = 15;
+light1.position.z = 5;
 scene.add(light1);
 
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
@@ -30,7 +30,7 @@ dracoLoader.setDecoderPath('/examples/js/libs/draco/gltf');
 loader.setDRACOLoader(dracoLoader);
 
 loader.load(
-  'models/meteor.gltf',
+  'models/meteor2.gltf',
   (gltf) => {
     model = gltf.scene
     model.position.set(4.5, 1.2, 0);
