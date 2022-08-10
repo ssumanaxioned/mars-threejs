@@ -1,8 +1,8 @@
 gsap.registerPlugin(MotionPathPlugin, ScrollTrigger)
 
-const container = document.querySelector(".container")
-const canvas = document.getElementById('mars');
-const svg = document.querySelector("svg");
+const body = document.querySelector("body");
+const container = body.querySelector(".container")
+const canvas = body.querySelector('#mars');
 
 const scene = new THREE.Scene();
 let model = null;
@@ -52,7 +52,7 @@ loader.load(
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: ".container",
-        start: "top top",
+        start: `top ${container.getBoundingClientRect().top}`,
         end: "bottom bottom",
         scrub: true,
         markers: true,
@@ -78,9 +78,10 @@ loader.load(
 const setModelCoordinates = () => {
   const screenX = model.position.x;
   const screenY = model.position.y;
+  const canvasBoundingRect = canvas.getBoundingClientRect();
 
-  model.position.x = ((screenX / canvas.getBoundingClientRect().width) * 2 - 1) * 7;
-  model.position.y = (-(screenY / canvas.getBoundingClientRect().height) * 2 + 1) * (7 / (canvas.getBoundingClientRect().width / canvas.getBoundingClientRect().height));
+  model.position.x = ((screenX / canvasBoundingRect.width) * 2 - 1) * 7;
+  model.position.y = (-(screenY / canvasBoundingRect.height) * 2 + 1) * (7 / (canvasBoundingRect.width / canvasBoundingRect.height));
   // console.log(`x: ${model.position.x}, y: ${model.position.y}`);
 }
 
