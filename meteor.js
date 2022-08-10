@@ -37,7 +37,7 @@ loader.load(
   'models/meteor.gltf',
   (gltf) => {
     model = gltf.scene;
-    model.position.set(4.059716412884334, 1.7495454612005854, 0);
+    model.position.set(4.67717868228404, 1.994219033674963, 0);
     model.scale.set(0.02, 0.02, 0.02);
     model.rotation.x = 0;
     // gui.add(model.position, 'x', -10, 10).name('X position')
@@ -80,8 +80,8 @@ const setModelCoordinates = () => {
   const screenY = model.position.y;
   const canvasBoundingRect = canvas.getBoundingClientRect();
 
-  model.position.x = ((screenX / canvasBoundingRect.width) * 2 - 1) * 7;
-  model.position.y = (-(screenY / canvasBoundingRect.height) * 2 + 1) * (7 / (canvasBoundingRect.width / canvasBoundingRect.height));
+  model.position.x = ((screenX / canvasBoundingRect.width) * 2 - 1) * 8;
+  model.position.y = (-(screenY / canvasBoundingRect.height) * 2 + 1) * (8 / (canvasBoundingRect.width / canvasBoundingRect.height));
   // console.log(`x: ${model.position.x}, y: ${model.position.y}`);
 }
 
