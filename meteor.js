@@ -2,13 +2,13 @@ const container = document.querySelector(".container")
 const canvas = document.getElementById('mars');
 const scene = new THREE.Scene();
 let model = null;
-const gui = new dat.GUI();
+// const gui = new dat.GUI();
 
 const light = new THREE.AmbientLight(0xffffff, 1)
 light.position.z = 5;
 scene.add(light);
 
-const light1 = new THREE.DirectionalLight(0xffffff, 1)
+const light1 = new THREE.DirectionalLight(0xffffff, .7)
 light1.position.z = 5;
 scene.add(light1);
 
@@ -30,7 +30,7 @@ dracoLoader.setDecoderPath('/examples/js/libs/draco/gltf');
 loader.setDRACOLoader(dracoLoader);
 
 loader.load(
-  'models/meteor2.gltf',
+  'models/meteor.gltf',
   (gltf) => {
     model = gltf.scene
     model.position.set(4.5, 1.2, 0);
