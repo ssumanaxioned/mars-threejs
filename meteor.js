@@ -64,7 +64,7 @@ loader.load(
         path: "#path",
         align: "#path"
       },
-      ease: "none"
+      ease: "power1.inOut"
     });
   },
   (xhr) => {
