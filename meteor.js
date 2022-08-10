@@ -3,7 +3,6 @@ gsap.registerPlugin(MotionPathPlugin, ScrollTrigger)
 const container = document.querySelector(".container")
 const canvas = document.getElementById('mars');
 const svg = document.querySelector("svg");
-console.log(`Canvas: x: ${canvas.getBoundingClientRect().width}, y: ${canvas.getBoundingClientRect().height}`);
 
 const scene = new THREE.Scene();
 let model = null;
@@ -37,8 +36,8 @@ loader.setDRACOLoader(dracoLoader);
 loader.load(
   'models/meteor.gltf',
   (gltf) => {
-    model = gltf.scene
-    model.position.set(4.5, 1.2, 0);
+    model = gltf.scene;
+    model.position.set(4.059716412884334, 1.7495454612005854, 0);
     model.scale.set(0.02, 0.02, 0.02);
     model.rotation.x = 0;
     // gui.add(model.position, 'x', -10, 10).name('X position')
@@ -50,7 +49,7 @@ loader.load(
     scene.add(model);
     render();
 
-    var action = gsap.timeline({
+    const tl = gsap.timeline({
       scrollTrigger: {
         trigger: ".container",
         start: "top top",
@@ -61,7 +60,7 @@ loader.load(
       }
     });
       
-    action.to(model.position, {
+    tl.to(model.position, {
       motionPath: {
         path: "#path",
         align: "#path"
@@ -82,7 +81,7 @@ const setModelCoordinates = () => {
 
   model.position.x = ((screenX / canvas.getBoundingClientRect().width) * 2 - 1) * 7;
   model.position.y = (-(screenY / canvas.getBoundingClientRect().height) * 2 + 1) * (7 / (canvas.getBoundingClientRect().width / canvas.getBoundingClientRect().height));
-  model.position.z = 0.5;
+  // console.log(`x: ${model.position.x}, y: ${model.position.y}`);
 }
 
 const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.jpg');
@@ -125,7 +124,6 @@ animationScripts.push({
   }
 })
 
-
 animationScripts.push({
   start: 40,
   end: 70,
@@ -137,7 +135,6 @@ animationScripts.push({
     }
   }
 })
-
 
 function playScrollAnimations() {
   animationScripts.forEach((a) => {
@@ -167,16 +164,13 @@ document.body.onscroll = () => {
 
 window.addEventListener("wheel", onScrollWheel);
 
-
 function onWindowResize() {
-
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
 
   renderer.setSize(window.innerWidth, window.innerHeight);
   render();
 }
-
 
 function render() {
   // controls.update();
@@ -191,10 +185,7 @@ function render() {
 
 window.scrollTo({ top: 0, behavior: 'smooth' });
 
-
-
 // JS functionality for text animation
-
 const banner = document.querySelector('.banner');
 const client = document.querySelectorAll('.client')
 
