@@ -93,11 +93,11 @@ let scroll = true;
 function onScrollWheel(e) {
   if (e.deltaY > 0 && scrollPercent < 99 && scrollPercent > 0) {
     // scrolling down
-    model.rotation.y += 0.1;
+    model.rotation.y += 0.2;
     scroll = true;
   }
   else if (e.deltaY < 0 && scrollPercent < 100 && scrollPercent > 0) {
-    model.rotation.y -= 0.1;
+    model.rotation.y -= 0.2;
     scroll = false;
   }
 }
@@ -165,8 +165,6 @@ document.body.onscroll = () => {
   // console.log(model.rotation.x, "rotation");
 }
 
-window.addEventListener("wheel", onScrollWheel);
-
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
@@ -177,9 +175,9 @@ function onWindowResize() {
 
 function render() {
   if (scroll || scrollPercent === 100 || scrollPercent === 0) {
-    model.rotation.y += 0.005;
+    model.rotation.y += 0.02;
   } else {
-    model.rotation.y -= 0.005;
+    model.rotation.y -= 0.02;
   }
   // controls.update();
   // let axis = model.quaternion;
