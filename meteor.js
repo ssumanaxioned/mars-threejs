@@ -64,7 +64,7 @@ loader.load(
         path: "#path",
         align: "#path"
       },
-      ease: "power1.inOut"
+      ease: "sine.inOut"
     });
   },
   (xhr) => {
@@ -93,10 +93,12 @@ let scroll = true;
 function onScrollWheel(e) {
   if (e.deltaY > 0 && scrollPercent < 99 && scrollPercent > 0) {
     // scrolling down
+    model.rotation.x += 0.2;
     model.rotation.y += 0.2;
     scroll = true;
   }
   else if (e.deltaY < 0 && scrollPercent < 100 && scrollPercent > 0) {
+    model.rotation.x -= 0.2;
     model.rotation.y -= 0.2;
     scroll = false;
   }
@@ -175,8 +177,10 @@ function onWindowResize() {
 
 function render() {
   if (scroll || scrollPercent === 100 || scrollPercent === 0) {
+    model.rotation.x += 0.02;
     model.rotation.y += 0.02;
   } else {
+    model.rotation.x -= 0.02;
     model.rotation.y -= 0.02;
   }
   // controls.update();
