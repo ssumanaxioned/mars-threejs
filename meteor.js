@@ -58,7 +58,7 @@ loader.load(
         onUpdate: setModelCoordinates
       }
     });
-      
+
     tl.to(model.position, {
       motionPath: {
         path: "#path",
@@ -89,17 +89,16 @@ const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.jpg');
 
 scene.background = galaxyImg;
 
-let scroll = false;
+let scroll = true;
 function onScrollWheel(e) {
-  console.log(scrollPercent);
-  if (e.deltaY > 0) {
+  if (e.deltaY > 0 && scrollPercent < 99 && scrollPercent > 0) {
     // scrolling down
-  if(scrollPercent < 100) (model.rotation.y += 0.03)
-  scroll = true;
+    model.rotation.y += 0.1;
+    scroll = true;
   }
-  else if (e.deltaY < 0) {
-  if(scrollPercent > 0) (model.rotation.y -= 0.03)
-  scroll = false;
+  else if (e.deltaY < 0 && scrollPercent < 100 && scrollPercent > 0) {
+    model.rotation.y -= 0.1;
+    scroll = false;
   }
 }
 
@@ -116,39 +115,39 @@ const animationScripts = [];
 
 animationScripts.push({
   start: 0,
-  end: 100,
+  end: 101,
   func: () => {
-    model.scale.x = lerp(0.02, 0.06, scalePercent(0, 100));
-    model.scale.y = lerp(0.02, 0.06, scalePercent(0, 100));
-    model.scale.z = lerp(0.02, 0.06, scalePercent(0, 100));
-    if (scroll) {
-      model.rotation.y += 0.02;
-    } else {
-      model.rotation.y -= 0.02;
-    }
+    model.scale.x = lerp(0.02, 0.06, scalePercent(0, 101));
+    model.scale.y = lerp(0.02, 0.06, scalePercent(0, 101));
+    model.scale.z = lerp(0.02, 0.06, scalePercent(0, 101));
+    // if (scroll) {
+    //   model.rotation.y += 0.05;
+    // } else {
+    //   model.rotation.y -= 0.05;
+    // }
   }
 })
 
-animationScripts.push({
-  start: 40,
-  end: 70,
-  func: () => {
-    if (scroll) {
-      model.rotation.y += 0.01;
-    } else {
-      model.rotation.y -= 0.01;
-    }
-  }
-})
+// animationScripts.push({
+//   start: 40,
+//   end: 70,
+//   func: () => {
+//     if (scroll) {
+//       model.rotation.y += 0.02;
+//     } else {
+//       model.rotation.y -= 0.02;
+//     }
+//   }
+// })
 
 function playScrollAnimations() {
   animationScripts.forEach((a) => {
     if (scrollPercent > a.start && scrollPercent < a.end) {
       a.func()
     }
-    else if (scrollPercent === a.end || scrollPercent === a.start) {
-      model.rotation.y += 0.005;
-    }
+    // else if (scrollPercent === a.end || scrollPercent === a.start) {
+    //   model.rotation.y += 0.005;
+    // }
   })
 }
 
@@ -163,7 +162,6 @@ document.body.onscroll = () => {
         document.documentElement.clientHeight)) *
     100
     ;
-  // console.log(scrollPercent.toFixed(2), "scrollPercent");
   // console.log(model.rotation.x, "rotation");
 }
 
@@ -178,6 +176,11 @@ function onWindowResize() {
 }
 
 function render() {
+  if (scroll || scrollPercent === 100 || scrollPercent === 0) {
+    model.rotation.y += 0.005;
+  } else {
+    model.rotation.y -= 0.005;
+  }
   // controls.update();
   // let axis = model.quaternion;
   // model.rotateOnAxis(new THREE.Vector3(0, 1, 0), 0.01);
