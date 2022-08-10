@@ -45,6 +45,7 @@ svg {
   left: 50%;
   font-size: 9rem;
   transform: translate(-50%, 0);
+  visibility: hidden;
 }
 
 .heading {

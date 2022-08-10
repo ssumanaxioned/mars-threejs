@@ -55,7 +55,6 @@ loader.load(
         start: `top ${container.getBoundingClientRect().top}`,
         end: "bottom bottom",
         scrub: true,
-        markers: true,
         onUpdate: setModelCoordinates
       }
     });
@@ -64,7 +63,8 @@ loader.load(
       motionPath: {
         path: "#path",
         align: "#path"
-      }
+      },
+      ease: "none"
     });
   },
   (xhr) => {
@@ -117,6 +117,9 @@ animationScripts.push({
   start: 0,
   end: 100,
   func: () => {
+    model.scale.x = lerp(0.02, 0.06, scalePercent(0, 100));
+    model.scale.y = lerp(0.02, 0.06, scalePercent(0, 100));
+    model.scale.z = lerp(0.02, 0.06, scalePercent(0, 100));
     if (scroll) {
       model.rotation.y += 0.01;
     } else {
