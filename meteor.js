@@ -5,6 +5,7 @@ const container = body.querySelector(".container")
 const canvas = body.querySelector('#mars');
 
 let oldX, oldY;
+let newX, newY;
 
 const scene = new THREE.Scene();
 let model = null;
@@ -91,8 +92,9 @@ const setModelCoordinates = (velocity) => {
   const screenX = model.position.x;
   const screenY = model.position.y;
   const canvasBoundingRect = canvas.getBoundingClientRect();
-  const newX = ((screenX / canvasBoundingRect.width) * 2 - 1) * 8;
-  const newY = (-(screenY / canvasBoundingRect.height) * 2 + 1) * (8 / (canvasBoundingRect.width / canvasBoundingRect.height));
+
+  newX = newX ? ((screenX / canvasBoundingRect.width) * 2 - 1) * 8 : 4.67717868228404;
+  newY = newY ? (-(screenY / canvasBoundingRect.height) * 2 + 1) * (8 / (canvasBoundingRect.width / canvasBoundingRect.height)) : 1.994219033674963;
 
   // const duration = calculateTweenDuration(velocity);
 
@@ -103,7 +105,7 @@ const setModelCoordinates = (velocity) => {
     x: newX,
     y: newY,
     duration: 0.5,
-    ease: "power3.out",
+    ease: "power2.out",
     onComplete: () => { oldX = newX; oldY = newY; }
   });
 }
