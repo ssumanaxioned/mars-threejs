@@ -62,7 +62,7 @@ loader.load(
     scene.add(model);
     render();
 
-    rotation.to(model.rotation, {y: 6.28319, ease:'none', repeat:-1, duration: 15});
+    rotation.to(model.rotation, {y: 6.28318531, ease:'none', repeat:-1, duration: 15});
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -108,19 +108,20 @@ const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.jpg');
 scene.background = galaxyImg;
 
 let scroll = true;
+
 function onScrollWheel(e) {
   if (e.deltaY > 0 && scrollPercent < 99 && scrollPercent > 0) {
     // scrolling down
     if(!scroll) {
       rotation.clear();
-      rotation.to(model.rotation, {y: 6.28319, ease: 'none', repeat: -1, duration: 15});
+      rotation.to(model.rotation, {y: 6.28318531, repeat: -1, duration: 10});
     }
     scroll = true;
   }
   else if (e.deltaY < 0 && scrollPercent < 100 && scrollPercent > 0) {
     if(scroll) {
       rotation.clear();
-      rotation.to(model.rotation, {y: -6.28318531, ease: 'none', repeat: -1, duration: 15});
+      rotation.to(model.rotation, {y: -6.28318531, repeat: -1, duration: 10});
     }
     scroll = false;
   }
@@ -150,9 +151,12 @@ function playScrollAnimations() {
 }
 
 let scrollPercent = 0;
+let timer;
 
-document.body.onscroll = () => {
+window.onscroll = () => {
   //calculate the current scroll progress as a percentage
+  clearTimeout(timer);
+  timer = setTimeout(defaultRotation, 250);
   scrollPercent =
     ((document.documentElement.scrollTop || document.body.scrollTop) /
       ((document.documentElement.scrollHeight ||
@@ -161,6 +165,15 @@ document.body.onscroll = () => {
     100
     ;
   // console.log(model.rotation.x, "rotation");
+}
+
+const defaultRotation = () => {
+  rotation.clear();
+  if(scroll) {
+    rotation.to(model.rotation, {y: 6.28318531, repeat: -1, duration: 15});
+  } else {
+    rotation.to(model.rotation, {y: -6.28318531, repeat: -1, duration: 15});
+  }
 }
 
 function onWindowResize() {
