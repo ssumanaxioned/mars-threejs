@@ -7,6 +7,8 @@ const canvas = body.querySelector('#mars');
 let oldX, oldY;
 let newX, newY;
 
+const rotation = gsap.timeline();
+
 const scene = new THREE.Scene();
 let model = null;
 // const gui = new dat.GUI();
@@ -60,6 +62,8 @@ loader.load(
     scene.add(model);
     render();
 
+    rotation.to(model.rotation, {y: 6.28319, ease:'none', repeat:-1, duration: 15});
+
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: ".container",
@@ -96,7 +100,6 @@ const setModelCoordinates = () => {
 
   model.position.x = ((screenX / canvasBoundingRect.width) * 2 - 1) * 8;
   model.position.y = (-(screenY / canvasBoundingRect.height) * 2 + 1) * (8 / (canvasBoundingRect.width / canvasBoundingRect.height));
-  // console.log(`x: ${model.position.x}, y: ${model.position.y}`);
 }
 
 const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.jpg');
@@ -107,11 +110,17 @@ let scroll = true;
 function onScrollWheel(e) {
   if (e.deltaY > 0 && scrollPercent < 99 && scrollPercent > 0) {
     // scrolling down
-    model.rotation.y += 0.1;
+    if(!scroll) {
+      rotation.clear();
+      rotation.to(model.rotation, {y: 6.28319, ease: 'none', repeat: -1, duration: 15});
+    }
     scroll = true;
   }
   else if (e.deltaY < 0 && scrollPercent < 100 && scrollPercent > 0) {
-    model.rotation.y -= 0.1;
+    if(scroll) {
+      rotation.clear();
+      rotation.to(model.rotation, {y: -6.28318531, ease: 'none', repeat: -1, duration: 15});
+    }
     scroll = false;
   }
   renderer.render(scene, camera);
@@ -189,11 +198,6 @@ function onWindowResize() {
 }
 
 function render() {
-  if (scroll || scrollPercent === 100 || scrollPercent === 0) {
-    model.rotation.y += 0.02;
-  } else {
-    model.rotation.y -= 0.02;
-  }
   // controls.update();
   // let axis = model.quaternion;
   // model.rotateOnAxis(new THREE.Vector3(0, 1, 0), 0.01);
