@@ -83,7 +83,8 @@ loader.load(
       onUpdate: () => {
         setModelCoordinates();
       }
-    });
+    })
+    .to(model.scale, {x: "+=0.03", y: "+=0.03", z: "+=0.03"}, "<");
   },
   (xhr) => {
     // console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
@@ -136,33 +137,6 @@ function scalePercent(start, end) {
 }
 
 const animationScripts = [];
-
-animationScripts.push({
-  start: 0,
-  end: 101,
-  func: () => {
-    model.scale.x = lerp(0.02, 0.06, scalePercent(0, 101));
-    model.scale.y = lerp(0.02, 0.06, scalePercent(0, 101));
-    model.scale.z = lerp(0.02, 0.06, scalePercent(0, 101));
-    // if (scroll) {
-    //   model.rotation.y += 0.05;
-    // } else {
-    //   model.rotation.y -= 0.05;
-    // }
-  }
-})
-
-// animationScripts.push({
-//   start: 40,
-//   end: 70,
-//   func: () => {
-//     if (scroll) {
-//       model.rotation.y += 0.02;
-//     } else {
-//       model.rotation.y -= 0.02;
-//     }
-//   }
-// })
 
 function playScrollAnimations() {
   animationScripts.forEach((a) => {
