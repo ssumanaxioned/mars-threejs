@@ -4,6 +4,8 @@ const body = document.querySelector("body");
 const container = body.querySelector(".container")
 const canvas = body.querySelector('#mars');
 
+let oldX, oldY;
+
 const scene = new THREE.Scene();
 let model = null;
 // const gui = new dat.GUI();
@@ -25,7 +27,9 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setClearColor(0xffffff, 0);
 
-camera.position.set(0, 0, 10);
+camera.position.x = 0;
+camera.position.y = 0;
+camera.position.z = 10;
 
 const loader = new THREE.GLTFLoader();
 
@@ -37,8 +41,14 @@ loader.load(
   'models/meteor.gltf',
   (gltf) => {
     model = gltf.scene;
-    model.position.set(4.67717868228404, 1.994219033674963, 0);
-    model.scale.set(0.02, 0.02, 0.02);
+    model.position.x = 4.67717868228404;
+    model.position.y = 1.994219033674963;
+    model.position.z = 0;
+
+    model.scale.x = 0.02;
+    model.scale.y = 0.02;
+    model.scale.z = 0.02;
+
     // model.rotation.x = 0;
     // gui.add(model.position, 'x', -10, 10).name('X position')
     // gui.add(model.position, 'y', -10, 10).name('Y position')
@@ -54,8 +64,7 @@ loader.load(
         trigger: ".container",
         start: `top ${container.getBoundingClientRect().top}`,
         end: "bottom bottom",
-        scrub: true,
-        onUpdate: setModelCoordinates
+        scrub: true
       }
     });
 
@@ -64,7 +73,10 @@ loader.load(
         path: "#path",
         align: "#path"
       },
-      ease: "sine.inOut"
+      ease: "none",
+      onUpdate: () => {
+        setModelCoordinates();
+      }
     });
   },
   (xhr) => {
@@ -75,14 +87,38 @@ loader.load(
   }
 )
 
-const setModelCoordinates = () => {
+const setModelCoordinates = (velocity) => {
   const screenX = model.position.x;
   const screenY = model.position.y;
   const canvasBoundingRect = canvas.getBoundingClientRect();
+  const newX = ((screenX / canvasBoundingRect.width) * 2 - 1) * 8;
+  const newY = (-(screenY / canvasBoundingRect.height) * 2 + 1) * (8 / (canvasBoundingRect.width / canvasBoundingRect.height));
 
-  model.position.x = ((screenX / canvasBoundingRect.width) * 2 - 1) * 8;
-  model.position.y = (-(screenY / canvasBoundingRect.height) * 2 + 1) * (8 / (canvasBoundingRect.width / canvasBoundingRect.height));
-  // console.log(`x: ${model.position.x}, y: ${model.position.y}`);
+  // const duration = calculateTweenDuration(velocity);
+
+  const tween = gsap.fromTo(model.position, {
+    x: oldX ? oldX : newX,
+    y: oldY ? oldY : newY
+  }, {
+    x: newX,
+    y: newY,
+    duration: 0.5,
+    ease: "power3.out",
+    onComplete: () => { oldX = newX; oldY = newY; }
+  });
+}
+
+const calculateTweenDuration = (velocity) => {
+  const min = 0;
+  const max = 5000;
+  const maxDuration = 1;
+
+  velocity = Math.abs(velocity);
+  if(velocity > 5000) {
+    velocity = 5000;
+  }
+
+  return (velocity / (max + 1) * maxDuration);
 }
 
 const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.jpg');
@@ -93,13 +129,14 @@ let scroll = true;
 function onScrollWheel(e) {
   if (e.deltaY > 0 && scrollPercent < 99 && scrollPercent > 0) {
     // scrolling down
-    model.rotation.y += 0.2;
+    model.rotation.y += 0.1;
     scroll = true;
   }
   else if (e.deltaY < 0 && scrollPercent < 100 && scrollPercent > 0) {
-    model.rotation.y -= 0.2;
+    model.rotation.y -= 0.1;
     scroll = false;
   }
+  renderer.render(scene, camera);
 }
 
 function lerp(x, y, a) {
