@@ -65,8 +65,9 @@ loader.load(
         trigger: ".container",
         start: `top ${container.getBoundingClientRect().top}`,
         end: "bottom bottom",
-        scrub: true
-      }
+        scrub: 1.5
+      },
+      ease: "power2.out"
     });
 
     tl.to(model.position, {
@@ -88,39 +89,14 @@ loader.load(
   }
 )
 
-const setModelCoordinates = (velocity) => {
+const setModelCoordinates = () => {
   const screenX = model.position.x;
   const screenY = model.position.y;
   const canvasBoundingRect = canvas.getBoundingClientRect();
 
-  newX = newX ? ((screenX / canvasBoundingRect.width) * 2 - 1) * 8 : 4.67717868228404;
-  newY = newY ? (-(screenY / canvasBoundingRect.height) * 2 + 1) * (8 / (canvasBoundingRect.width / canvasBoundingRect.height)) : 1.994219033674963;
-
-  // const duration = calculateTweenDuration(velocity);
-
-  const tween = gsap.fromTo(model.position, {
-    x: oldX ? oldX : newX,
-    y: oldY ? oldY : newY
-  }, {
-    x: newX,
-    y: newY,
-    duration: 0.5,
-    ease: "power2.out",
-    onComplete: () => { oldX = newX; oldY = newY; }
-  });
-}
-
-const calculateTweenDuration = (velocity) => {
-  const min = 0;
-  const max = 5000;
-  const maxDuration = 1;
-
-  velocity = Math.abs(velocity);
-  if(velocity > 5000) {
-    velocity = 5000;
-  }
-
-  return (velocity / (max + 1) * maxDuration);
+  model.position.x = ((screenX / canvasBoundingRect.width) * 2 - 1) * 8;
+  model.position.y = (-(screenY / canvasBoundingRect.height) * 2 + 1) * (8 / (canvasBoundingRect.width / canvasBoundingRect.height));
+  // console.log(`x: ${model.position.x}, y: ${model.position.y}`);
 }
 
 const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.jpg');
