@@ -4,6 +4,9 @@ const body = document.querySelector("body");
 const container = body.querySelector(".container")
 const canvas = body.querySelector('#mars');
 
+let scroll = true;
+window.addEventListener("wheel", onScrollWheel);
+
 let oldX, oldY;
 let newX, newY;
 
@@ -62,7 +65,8 @@ loader.load(
     scene.add(model);
     render();
 
-    rotation.to(model.rotation, {y: 6.28318531, ease:'none', repeat:-1, duration: 15});
+    rotation.clear();
+    rotation.to(model.rotation, {y: 6.28318531, repeat:-1, duration: 15});
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -107,25 +111,19 @@ const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.jpg');
 
 scene.background = galaxyImg;
 
-let scroll = true;
-
 function onScrollWheel(e) {
   if (e.deltaY > 0 && scrollPercent < 99 && scrollPercent > 0) {
     // scrolling down
-    if(!scroll) {
-      rotation.clear();
-      rotation.to(model.rotation, {y: 6.28318531, repeat: -1, duration: 10});
-    }
+    rotation.clear();
+    rotation.to(model.rotation, {y: 6.28318531, repeat: -1, duration: 10});
     scroll = true;
   }
   else if (e.deltaY < 0 && scrollPercent < 100 && scrollPercent > 0) {
-    if(scroll) {
-      rotation.clear();
-      rotation.to(model.rotation, {y: -6.28318531, repeat: -1, duration: 10});
-    }
+    rotation.clear();
+    rotation.to(model.rotation, {y: -6.28318531, repeat: -1, duration: 10});
     scroll = false;
   }
-  renderer.render(scene, camera);
+  // renderer.render(scene, camera);
 }
 
 function lerp(x, y, a) {
@@ -188,7 +186,6 @@ function render() {
   // controls.update();
   // let axis = model.quaternion;
   // model.rotateOnAxis(new THREE.Vector3(0, 1, 0), 0.01);
-  window.addEventListener("wheel", onScrollWheel);
   playScrollAnimations();
   requestAnimationFrame(render);
   renderer.render(scene, camera);
