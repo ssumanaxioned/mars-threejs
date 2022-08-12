@@ -67,7 +67,7 @@ loader.load(
         end: "bottom bottom",
         scrub: 1.5
       },
-      ease: "power2.out"
+      ease: "power4.out"
     });
 
     tl.to(model.position, {
