@@ -4,12 +4,9 @@ const body = document.querySelector("body");
 const container = body.querySelector(".container")
 const canvas = body.querySelector('#mars');
 
-let oldX, oldY;
-let newX, newY;
-
-let meteorDefaultRotation;
-let meteorClockwiseRotation = true;
-const rotation = gsap.timeline();
+let meteorDefaultRotationSpeed; // 'true' for default rotation speed of Meteor
+let meteorClockwiseRotation; // contains the current direction the Meteor is rotating
+const rotation = gsap.timeline(); // GSAP timeline for Meteor rotation
 
 const scene = new THREE.Scene();
 let model = null;
@@ -64,11 +61,13 @@ loader.load(
     scene.add(model);
     render();
 
+    // Initialize 'rotation' timeline and give default values for Meteor rotation speed & direction
     rotation.clear();
     rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: 15});
     meteorClockwiseRotation = true;
-    meteorDefaultRotation = true;
+    meteorDefaultRotationSpeed = true;
 
+    // Main timeline on Scroll position
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: ".container",
@@ -79,6 +78,7 @@ loader.load(
       ease: "power4.out"
     });
 
+    // give Meteor path
     tl.to(model.position, {
       motionPath: {
         path: "#path",
@@ -89,6 +89,7 @@ loader.load(
         setModelCoordinates();
       }
     })
+    // increase/decrease Meteor size on scroll
     .to(model.scale, {x: "+=0.03", y: "+=0.03", z: "+=0.03"}, "<");
   },
   (xhr) => {
@@ -99,6 +100,7 @@ loader.load(
   }
 )
 
+// Prints passed value/Message in console.log. set 'showConsoleLogs' => true to show them
 const showInConsoleLog = (value) => {
   const showConsoleLogs = false;
   if(showConsoleLogs) {
@@ -106,35 +108,42 @@ const showInConsoleLog = (value) => {
   }
 }
 
+// Update 'Models' position on path onscroll
 let timer;
 const setModelCoordinates = () => {
+  // The default model position coordinates are in 'Screen coordinate'
   const screenX = model.position.x;
   const screenY = model.position.y;
   const canvasBoundingRect = canvas.getBoundingClientRect();
 
+  // Convert 'Screen coordinate' values to 'World coordinate' values, as Three.js uses 'World coordinate system'.
   model.position.x = ((screenX / canvasBoundingRect.width) * 2 - 1) * 8;
   model.position.y = (-(screenY / canvasBoundingRect.height) * 2 + 1) * (8 / (canvasBoundingRect.width / canvasBoundingRect.height));
 
   fastRotationOnScroll();
+
+  // Timer for detecting page scrolling stop to change the Meteor speed back to normal
   clearTimeout(timer);
   timer = setTimeout(defaultRotation, 200);
 }
 
+// Gives Default Rotation speed to Meteor
 const defaultRotation = () => {
-  if(!meteorDefaultRotation) {
+  if(!meteorDefaultRotationSpeed) {
     rotation.clear();
     showInConsoleLog("In defaultRotation(): Rotation timeline cleared");
     setRotationSpeedAndDirectionForObject(true);
-    meteorDefaultRotation = true;
+    meteorDefaultRotationSpeed = true;
   }
 }
 
+// Gives faster Rotation speed to Meteor onscroll
 const fastRotationOnScroll = () => {
-  if(meteorDefaultRotation) {
+  if(meteorDefaultRotationSpeed) {
     rotation.clear();
     showInConsoleLog("In fastRotationOnScroll(): Rotation timeline cleared");
     setRotationSpeedAndDirectionForObject(false);
-    meteorDefaultRotation = false;
+    meteorDefaultRotationSpeed = false;
   } else {
     if(scroll != meteorClockwiseRotation) {
       rotation.clear();
@@ -143,6 +152,7 @@ const fastRotationOnScroll = () => {
   }
 }
 
+// sets Rotation Speed & Direction for Meteor
 const setRotationSpeedAndDirectionForObject = (defaultRotationSpeed) => {
   if(scroll) {
     rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: `${defaultRotationSpeed ? 15 : 7.5}`});
