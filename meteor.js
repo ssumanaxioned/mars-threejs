@@ -97,6 +97,7 @@ loader.load(
   }
 )
 
+let timer;
 const setModelCoordinates = () => {
   const screenX = model.position.x;
   const screenY = model.position.y;
@@ -106,6 +107,21 @@ const setModelCoordinates = () => {
   model.position.y = (-(screenY / canvasBoundingRect.height) * 2 + 1) * (8 / (canvasBoundingRect.width / canvasBoundingRect.height));
 
   fastRotationOnScroll();
+  clearTimeout(timer);
+  timer = setTimeout(defaultRotation, 300);
+}
+
+const defaultRotation = () => {
+  if(!meteorDefaultRotation) {
+    rotation.clear();
+    console.log("In defaultRotation(): Rotation timeline cleared");
+    if(scroll) {
+      rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: 15});
+    } else {
+      rotation.to(model.rotation, {y: "-=6.28318531", ease: 'none', repeat: -1, duration: 15});
+    }
+    meteorDefaultRotation = true;
+  }
 }
 
 const fastRotationOnScroll = () => {
@@ -126,7 +142,6 @@ const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.jpg');
 scene.background = galaxyImg;
 
 let scroll = true;
-let timer;
 function onScrollWheel(e) {
   if (e.deltaY > 0 && scrollPercent < 99 && scrollPercent > 0) {
     // scrolling down
@@ -134,22 +149,7 @@ function onScrollWheel(e) {
   } else if (e.deltaY < 0 && scrollPercent < 100 && scrollPercent > 0) {
     scroll = false;
   }
-  clearTimeout(timer);
-  timer = setTimeout(defaultRotation, 300);
   renderer.render(scene, camera);
-}
-
-const defaultRotation = () => {
-  if(!meteorDefaultRotation) {
-    rotation.clear();
-    console.log("In defaultRotation(): Rotation timeline cleared");
-    if(scroll) {
-      rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: 15});
-    } else {
-      rotation.to(model.rotation, {y: "-=6.28318531", ease: 'none', repeat: -1, duration: 15});
-    }
-    meteorDefaultRotation = true;
-  }
 }
 
 function lerp(x, y, a) {
