@@ -8,6 +8,7 @@ let oldX, oldY;
 let newX, newY;
 
 let meteorDefaultRotation;
+let meteorClockwiseRotation = true;
 const rotation = gsap.timeline();
 
 const scene = new THREE.Scene();
@@ -65,6 +66,7 @@ loader.load(
 
     rotation.clear();
     rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: 15});
+    meteorClockwiseRotation = true;
     meteorDefaultRotation = true;
 
     const tl = gsap.timeline({
@@ -115,18 +117,14 @@ const setModelCoordinates = () => {
 
   fastRotationOnScroll();
   clearTimeout(timer);
-  timer = setTimeout(defaultRotation, 300);
+  timer = setTimeout(defaultRotation, 200);
 }
 
 const defaultRotation = () => {
   if(!meteorDefaultRotation) {
     rotation.clear();
     showInConsoleLog("In defaultRotation(): Rotation timeline cleared");
-    if(scroll) {
-      rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: 15});
-    } else {
-      rotation.to(model.rotation, {y: "-=6.28318531", ease: 'none', repeat: -1, duration: 15});
-    }
+    setRotationSpeedAndDirectionForObject(true);
     meteorDefaultRotation = true;
   }
 }
@@ -135,12 +133,23 @@ const fastRotationOnScroll = () => {
   if(meteorDefaultRotation) {
     rotation.clear();
     showInConsoleLog("In fastRotationOnScroll(): Rotation timeline cleared");
-    if(scroll) {
-      rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: 7.5});
-    } else {
-      rotation.to(model.rotation, {y: "-=6.28318531", ease: 'none', repeat: -1, duration: 7.5});
-    }
+    setRotationSpeedAndDirectionForObject(false);
     meteorDefaultRotation = false;
+  } else {
+    if(scroll != meteorClockwiseRotation) {
+      rotation.clear();
+      setRotationSpeedAndDirectionForObject(false);
+    }
+  }
+}
+
+const setRotationSpeedAndDirectionForObject = (defaultRotationSpeed) => {
+  if(scroll) {
+    rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: `${defaultRotationSpeed ? 15 : 7.5}`});
+    meteorClockwiseRotation = true;
+  } else {
+    rotation.to(model.rotation, {y: "-=6.28318531", ease: 'none', repeat: -1, duration: `${defaultRotationSpeed ? 15 : 7.5}`});
+    meteorClockwiseRotation = false;
   }
 }
 
