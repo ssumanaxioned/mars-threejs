@@ -97,6 +97,13 @@ loader.load(
   }
 )
 
+const showInConsoleLog = (value) => {
+  const showConsoleLogs = false;
+  if(showConsoleLogs) {
+    console.log(value);
+  }
+}
+
 let timer;
 const setModelCoordinates = () => {
   const screenX = model.position.x;
@@ -114,7 +121,7 @@ const setModelCoordinates = () => {
 const defaultRotation = () => {
   if(!meteorDefaultRotation) {
     rotation.clear();
-    console.log("In defaultRotation(): Rotation timeline cleared");
+    showInConsoleLog("In defaultRotation(): Rotation timeline cleared");
     if(scroll) {
       rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: 15});
     } else {
@@ -127,7 +134,7 @@ const defaultRotation = () => {
 const fastRotationOnScroll = () => {
   if(meteorDefaultRotation) {
     rotation.clear();
-    console.log("In fastRotationOnScroll(): Rotation timeline cleared");
+    showInConsoleLog("In fastRotationOnScroll(): Rotation timeline cleared");
     if(scroll) {
       rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: 7.5});
     } else {
