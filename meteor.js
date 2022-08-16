@@ -1,15 +1,13 @@
-gsap.registerPlugin(MotionPathPlugin, ScrollTrigger)
+gsap.registerPlugin(MotionPathPlugin, ScrollTrigger);
 
 const body = document.querySelector("body");
 const container = body.querySelector(".container")
 const canvas = body.querySelector('#mars');
 
-let scroll = true;
-window.addEventListener("wheel", onScrollWheel);
-
 let oldX, oldY;
 let newX, newY;
 
+let meteorDefaultRotation;
 const rotation = gsap.timeline();
 
 const scene = new THREE.Scene();
@@ -66,7 +64,8 @@ loader.load(
     render();
 
     rotation.clear();
-    rotation.to(model.rotation, {y: 6.28318531, repeat:-1, duration: 15});
+    rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: 15});
+    meteorDefaultRotation = true;
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -105,25 +104,52 @@ const setModelCoordinates = () => {
 
   model.position.x = ((screenX / canvasBoundingRect.width) * 2 - 1) * 8;
   model.position.y = (-(screenY / canvasBoundingRect.height) * 2 + 1) * (8 / (canvasBoundingRect.width / canvasBoundingRect.height));
+
+  fastRotationOnScroll();
+}
+
+const fastRotationOnScroll = () => {
+  if(meteorDefaultRotation) {
+    rotation.clear();
+    console.log("In fastRotationOnScroll(): Rotation timeline cleared");
+    if(scroll) {
+      rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: 7.5});
+    } else {
+      rotation.to(model.rotation, {y: "-=6.28318531", ease: 'none', repeat: -1, duration: 7.5});
+    }
+    meteorDefaultRotation = false;
+  }
 }
 
 const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.jpg');
 
 scene.background = galaxyImg;
 
+let scroll = true;
+let timer;
 function onScrollWheel(e) {
   if (e.deltaY > 0 && scrollPercent < 99 && scrollPercent > 0) {
     // scrolling down
-    rotation.clear();
-    rotation.to(model.rotation, {y: 6.28318531, repeat: -1, duration: 10});
     scroll = true;
-  }
-  else if (e.deltaY < 0 && scrollPercent < 100 && scrollPercent > 0) {
-    rotation.clear();
-    rotation.to(model.rotation, {y: -6.28318531, repeat: -1, duration: 10});
+  } else if (e.deltaY < 0 && scrollPercent < 100 && scrollPercent > 0) {
     scroll = false;
   }
-  // renderer.render(scene, camera);
+  clearTimeout(timer);
+  timer = setTimeout(defaultRotation, 300);
+  renderer.render(scene, camera);
+}
+
+const defaultRotation = () => {
+  if(!meteorDefaultRotation) {
+    rotation.clear();
+    console.log("In defaultRotation(): Rotation timeline cleared");
+    if(scroll) {
+      rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: 15});
+    } else {
+      rotation.to(model.rotation, {y: "-=6.28318531", ease: 'none', repeat: -1, duration: 15});
+    }
+    meteorDefaultRotation = true;
+  }
 }
 
 function lerp(x, y, a) {
@@ -149,12 +175,9 @@ function playScrollAnimations() {
 }
 
 let scrollPercent = 0;
-let timer;
 
-window.onscroll = () => {
+document.body.onscroll = () => {
   //calculate the current scroll progress as a percentage
-  clearTimeout(timer);
-  timer = setTimeout(defaultRotation, 250);
   scrollPercent =
     ((document.documentElement.scrollTop || document.body.scrollTop) /
       ((document.documentElement.scrollHeight ||
@@ -163,15 +186,6 @@ window.onscroll = () => {
     100
     ;
   // console.log(model.rotation.x, "rotation");
-}
-
-const defaultRotation = () => {
-  rotation.clear();
-  if(scroll) {
-    rotation.to(model.rotation, {y: 6.28318531, repeat: -1, duration: 15});
-  } else {
-    rotation.to(model.rotation, {y: -6.28318531, repeat: -1, duration: 15});
-  }
 }
 
 function onWindowResize() {
@@ -186,6 +200,7 @@ function render() {
   // controls.update();
   // let axis = model.quaternion;
   // model.rotateOnAxis(new THREE.Vector3(0, 1, 0), 0.01);
+  window.addEventListener("wheel", onScrollWheel);
   playScrollAnimations();
   requestAnimationFrame(render);
   renderer.render(scene, camera);
