@@ -182,6 +182,7 @@ const setRotationSpeedAndDirectionForObject = (defaultRotationSpeed) => {
   }
 }
 
+// Clears 'rotation timeline' and gives default rotation speed to Meteor
 const clearRotationAndGiveDefaultRotation = () => {
   if(scroll) {
     rotation.clear();
