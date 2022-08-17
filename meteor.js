@@ -4,26 +4,29 @@ const body = document.querySelector("body");
 const container = body.querySelector(".container")
 const canvas = body.querySelector('#mars');
 
-window.addEventListener("wheel", onScrollWheel);
-
 let scroll = true;
 let scrollPercent = 0;
 
-const onScroll = () => {
+const onScroll = (args) => {
   //calculate the current scroll progress as a percentage
   scrollPercent =
     ((document.documentElement.scrollTop || body.scrollTop) /
       ((document.documentElement.scrollHeight ||
         body.scrollHeight) -
         document.documentElement.clientHeight)) *
-    100
-    ;
-  // console.log(model.rotation.x, "rotation");
+    100;
+
+  if(args.direction == "down") {
+    scroll = true;
+  } else if(args.direction == "up") {
+    scroll = false;
+  }
 }
 
 const locoScroll = new LocomotiveScroll({
   el: container,
-  smooth: true
+  smooth: true,
+  getDirection: true
 });
 
 locoScroll.on("scroll", ScrollTrigger.update);
@@ -203,15 +206,6 @@ const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.jpg');
 
 scene.background = galaxyImg;
 
-function onScrollWheel(e) {
-  if (e.deltaY > 0 && scrollPercent < 99 && scrollPercent > 0) {
-    // scrolling down
-    scroll = true;
-  } else if (e.deltaY < 0 && scrollPercent < 100 && scrollPercent > 0) {
-    scroll = false;
-  }
-}
-
 function lerp(x, y, a) {
   return (1 - a) * x + a * y;
 }
@@ -251,7 +245,7 @@ function render() {
   renderer.render(scene, camera);
 }
 
-window.scrollTo({ top: 0, behavior: 'smooth' });
+locoScroll.scrollTo({ target: "top" });
 
 // JS functionality for text animation
 const banner = document.querySelector('.banner');
