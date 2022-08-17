@@ -62,8 +62,7 @@ loader.load(
     render();
 
     // Initialize 'rotation' timeline and give default values for Meteor rotation speed & direction
-    rotation.clear();
-    rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: 15});
+    clearRotationAndGiveDefaultRotation();
     meteorClockwiseRotation = true;
     meteorDefaultRotationSpeed = true;
 
@@ -156,26 +155,40 @@ const fastRotationOnScroll = () => {
 const setRotationSpeedAndDirectionForObject = (defaultRotationSpeed) => {
   if(scroll) {
     if(defaultRotationSpeed) {
-      rotation.to(model.rotation, {y: "+=0.418879", duration: 0.5});
-      rotation.to(model.rotation, {y: "+=0.349066", duration: 0.5}, ">");
-      rotation.to(model.rotation, {y: "+=0.314159", duration: 0.5}, ">");
-      rotation.to(model.rotation, {y: "+=0.20944", duration: 0.5}, ">");
-      rotation.to(model.rotation, {y: "+=6.28318531", repeat: -1, duration: 15}, ">");
+      console.log("Default Rotation: Clockwise");
+      rotation.to(model.rotation, {y: "+=0.5236", ease: 'none', duration: 0.5})
+        .to(model.rotation, {y: "+=0.418879", ease: 'none', duration: 0.5}, ">")
+        .to(model.rotation, {y: "+=0.349066", ease: 'none', duration: 0.5}, ">")
+        .to(model.rotation, {y: "+=0.3141595", ease: 'none', duration: 0.5}, ">")
+        .to(model.rotation, {y: "+=0.2617995", ease: 'none', duration: 0.5, onComplete: clearRotationAndGiveDefaultRotation}, ">");
     } else {
+      console.log("Fast Rotation: Clockwise");
       rotation.to(model.rotation, {y: "+=6.28318531", repeat: -1, duration: 5});
     }
     meteorClockwiseRotation = true;
   } else {
     if(defaultRotationSpeed) {
-      rotation.to(model.rotation, {y: "-=0.418879", duration: 0.5});
-      rotation.to(model.rotation, {y: "-=0.349066", duration: 0.5}, ">");
-      rotation.to(model.rotation, {y: "-=0.314159", duration: 0.5}, ">");
-      rotation.to(model.rotation, {y: "-=0.20944", duration: 0.5}, ">");
-      rotation.to(model.rotation, {y: "-=6.28318531", repeat: -1, duration: 15}, ">");
+      console.log("Default Rotation: AntiClockwise");
+      rotation.to(model.rotation, {y: "-=0.5236", ease: 'none', duration: 0.5})
+        .to(model.rotation, {y: "-=0.418879", ease: 'none', duration: 0.5}, ">")
+        .to(model.rotation, {y: "-=0.349066", ease: 'none', duration: 0.5}, ">")
+        .to(model.rotation, {y: "-=0.3141595", ease: 'none', duration: 0.5}, ">")
+        .to(model.rotation, {y: "-=0.2617995", ease: 'none', duration: 0.5, onComplete: clearRotationAndGiveDefaultRotation}, ">");
     } else {
+      console.log("Fast Rotation: AntiClockwise");
       rotation.to(model.rotation, {y: "-=6.28318531", repeat: -1, duration: 5});
     }
     meteorClockwiseRotation = false;
+  }
+}
+
+const clearRotationAndGiveDefaultRotation = () => {
+  if(scroll) {
+    rotation.clear();
+    rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: 15});
+  } else {
+    rotation.clear();
+    rotation.to(model.rotation, {y: "-=6.28318531", ease: 'none', repeat: -1, duration: 15});
   }
 }
 
