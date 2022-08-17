@@ -4,9 +4,22 @@ const body = document.querySelector("body");
 const container = body.querySelector(".container")
 const canvas = body.querySelector('#mars');
 
-let meteorDefaultRotationSpeed; // 'true' for default rotation speed of Meteor
-let meteorClockwiseRotation; // contains the current direction the Meteor is rotating
-const rotation = gsap.timeline(); // GSAP timeline for Meteor rotation
+window.addEventListener("wheel", onScrollWheel);
+
+let scroll = true;
+let scrollPercent = 0;
+
+const onScroll = () => {
+  //calculate the current scroll progress as a percentage
+  scrollPercent =
+    ((document.documentElement.scrollTop || body.scrollTop) /
+      ((document.documentElement.scrollHeight ||
+        body.scrollHeight) -
+        document.documentElement.clientHeight)) *
+    100
+    ;
+  // console.log(model.rotation.x, "rotation");
+}
 
 const locoScroll = new LocomotiveScroll({
   el: container,
@@ -14,6 +27,7 @@ const locoScroll = new LocomotiveScroll({
 });
 
 locoScroll.on("scroll", ScrollTrigger.update);
+locoScroll.on("scroll", onScroll);
 
 ScrollTrigger.scrollerProxy(".container", {
   scrollTop(value) {
@@ -25,9 +39,9 @@ ScrollTrigger.scrollerProxy(".container", {
   pinType: container.style.transform ? "transform" : "fixed"
 });
 
-ScrollTrigger.addEventListener("refresh", () => locoScroll.update());
-
-ScrollTrigger.refresh();
+let meteorDefaultRotationSpeed; // 'true' for default rotation speed of Meteor
+let meteorClockwiseRotation; // contains the current direction the Meteor is rotating
+const rotation = gsap.timeline(); // GSAP timeline for Meteor rotation
 
 const scene = new THREE.Scene();
 let model = null;
@@ -92,6 +106,7 @@ loader.load(
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: ".container",
+        scroller: ".container",
         start: `top ${container.getBoundingClientRect().top}`,
         end: "bottom bottom",
         scrub: 1.5
@@ -119,7 +134,7 @@ loader.load(
   (error) => {
     console.log(error)
   }
-)
+);
 
 // Prints passed value/Message in console.log. set 'showConsoleLogs' => true to show them
 const showInConsoleLog = (value) => {
@@ -188,7 +203,6 @@ const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.jpg');
 
 scene.background = galaxyImg;
 
-let scroll = true;
 function onScrollWheel(e) {
   if (e.deltaY > 0 && scrollPercent < 99 && scrollPercent > 0) {
     // scrolling down
@@ -196,7 +210,6 @@ function onScrollWheel(e) {
   } else if (e.deltaY < 0 && scrollPercent < 100 && scrollPercent > 0) {
     scroll = false;
   }
-  renderer.render(scene, camera);
 }
 
 function lerp(x, y, a) {
@@ -221,20 +234,6 @@ function playScrollAnimations() {
   })
 }
 
-let scrollPercent = 0;
-
-document.body.onscroll = () => {
-  //calculate the current scroll progress as a percentage
-  scrollPercent =
-    ((document.documentElement.scrollTop || document.body.scrollTop) /
-      ((document.documentElement.scrollHeight ||
-        document.body.scrollHeight) -
-        document.documentElement.clientHeight)) *
-    100
-    ;
-  // console.log(model.rotation.x, "rotation");
-}
-
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
@@ -247,7 +246,6 @@ function render() {
   // controls.update();
   // let axis = model.quaternion;
   // model.rotateOnAxis(new THREE.Vector3(0, 1, 0), 0.01);
-  window.addEventListener("wheel", onScrollWheel);
   playScrollAnimations();
   requestAnimationFrame(render);
   renderer.render(scene, camera);
@@ -276,4 +274,8 @@ const handleIntersect = (entries) => {
 
 let observer = new IntersectionObserver(handleIntersect, options)
 
-docElem.forEach(elem => observer.observe(elem))
+docElem.forEach(elem => observer.observe(elem));
+
+ScrollTrigger.addEventListener("refresh", () => locoScroll.update());
+
+ScrollTrigger.refresh();
