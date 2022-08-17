@@ -67,7 +67,7 @@ loader.load(
     meteorClockwiseRotation = true;
     meteorDefaultRotationSpeed = true;
 
-    // Main timeline on Scroll position
+    // Main timeline with ScrollTrigger
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: ".container",
