@@ -4,6 +4,8 @@ const body = document.querySelector("body");
 const container = body.querySelector(".container")
 const canvas = body.querySelector('#mars');
 
+window.addEventListener("wheel", onScrollWheel);
+
 let meteorDefaultRotationSpeed; // 'true' for default rotation speed of Meteor
 let meteorClockwiseRotation; // contains the current direction the Meteor is rotating
 const rotation = gsap.timeline(); // GSAP timeline for Meteor rotation
@@ -256,7 +258,6 @@ function render() {
   // controls.update();
   // let axis = model.quaternion;
   // model.rotateOnAxis(new THREE.Vector3(0, 1, 0), 0.01);
-  window.addEventListener("wheel", onScrollWheel);
   playScrollAnimations();
   requestAnimationFrame(render);
   renderer.render(scene, camera);
