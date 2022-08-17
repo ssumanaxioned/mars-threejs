@@ -1,5 +1,13 @@
-const container = document.querySelector(".container")
-const canvas = document.getElementById('mars');
+gsap.registerPlugin(MotionPathPlugin, ScrollTrigger);
+
+const body = document.querySelector("body");
+const container = body.querySelector(".container")
+const canvas = body.querySelector('#mars');
+
+let meteorDefaultRotationSpeed; // 'true' for default rotation speed of Meteor
+let meteorClockwiseRotation; // contains the current direction the Meteor is rotating
+const rotation = gsap.timeline(); // GSAP timeline for Meteor rotation
+
 const scene = new THREE.Scene();
 let model = null;
 // const gui = new dat.GUI();
@@ -21,7 +29,9 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setClearColor(0xffffff, 0);
 
-camera.position.set(0, 0, 10);
+camera.position.x = 0;
+camera.position.y = 0;
+camera.position.z = 10;
 
 const loader = new THREE.GLTFLoader();
 
@@ -32,9 +42,15 @@ loader.setDRACOLoader(dracoLoader);
 loader.load(
   'models/meteor.gltf',
   (gltf) => {
-    model = gltf.scene
-    model.position.set(4.5, 1.2, 0);
-    model.scale.set(0.02, 0.02, 0.02);
+    model = gltf.scene;
+    model.position.x = 4.67717868228404;
+    model.position.y = 1.994219033674963;
+    model.position.z = 0;
+
+    model.scale.x = 0.02;
+    model.scale.y = 0.02;
+    model.scale.z = 0.02;
+
     // model.rotation.x = 0;
     // gui.add(model.position, 'x', -10, 10).name('X position')
     // gui.add(model.position, 'y', -10, 10).name('Y position')
@@ -44,6 +60,37 @@ loader.load(
     // gui.add(model.scale, 'z', 0, .1).name('Z position')
     scene.add(model);
     render();
+
+    // Initialize 'rotation' timeline and give default values for Meteor rotation speed & direction
+    rotation.clear();
+    rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: 15});
+    meteorClockwiseRotation = true;
+    meteorDefaultRotationSpeed = true;
+
+    // Main timeline with ScrollTrigger
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: ".container",
+        start: `top ${container.getBoundingClientRect().top}`,
+        end: "bottom bottom",
+        scrub: 1.5
+      },
+      ease: "power4.out"
+    });
+
+    // give Meteor path
+    tl.to(model.position, {
+      motionPath: {
+        path: "#path",
+        align: "#path"
+      },
+      ease: "none",
+      onUpdate: () => {
+        setModelCoordinates();
+      }
+    })
+    // increase/decrease Meteor size on scroll
+    .to(model.scale, {x: "+=0.03", y: "+=0.03", z: "+=0.03"}, "<");
   },
   (xhr) => {
     // console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
@@ -53,22 +100,98 @@ loader.load(
   }
 )
 
+// Prints passed value/Message in console.log. set 'showConsoleLogs' => true to show them
+const showInConsoleLog = (value) => {
+  const showConsoleLogs = false;
+  if(showConsoleLogs) {
+    console.log(value);
+  }
+}
+
+// Update 'Models' position on path onscroll
+let timer;
+const setModelCoordinates = () => {
+  // The default model position coordinates are in 'Screen coordinate'
+  const screenX = model.position.x;
+  const screenY = model.position.y;
+  const canvasBoundingRect = canvas.getBoundingClientRect();
+
+  // Convert 'Screen coordinate' values to 'World coordinate' values, as Three.js uses 'World coordinate system'.
+  model.position.x = ((screenX / canvasBoundingRect.width) * 2 - 1) * 8;
+  model.position.y = (-(screenY / canvasBoundingRect.height) * 2 + 1) * (8 / (canvasBoundingRect.width / canvasBoundingRect.height));
+
+  fastRotationOnScroll();
+
+  // Timer for detecting page scrolling stop to change the Meteor speed back to normal
+  clearTimeout(timer);
+  timer = setTimeout(defaultRotation, 200);
+}
+
+// Gives Default Rotation speed to Meteor
+const defaultRotation = () => {
+  if(!meteorDefaultRotationSpeed) {
+    rotation.clear();
+    showInConsoleLog("In defaultRotation(): Rotation timeline cleared");
+    setRotationSpeedAndDirectionForObject(true);
+    meteorDefaultRotationSpeed = true;
+  }
+}
+
+// Gives faster Rotation speed to Meteor onscroll
+const fastRotationOnScroll = () => {
+  if(meteorDefaultRotationSpeed) {
+    rotation.clear();
+    showInConsoleLog("In fastRotationOnScroll(): Rotation timeline cleared");
+    setRotationSpeedAndDirectionForObject(false);
+    meteorDefaultRotationSpeed = false;
+  } else {
+    if(scroll != meteorClockwiseRotation) {
+      rotation.clear();
+      setRotationSpeedAndDirectionForObject(false);
+    }
+  }
+}
+
+// sets Rotation Speed & Direction for Meteor
+const setRotationSpeedAndDirectionForObject = (defaultRotationSpeed) => {
+  if(scroll) {
+    if(defaultRotationSpeed) {
+      rotation.to(model.rotation, {y: "+=0.418879", duration: 0.5});
+      rotation.to(model.rotation, {y: "+=0.349066", duration: 0.5}, ">");
+      rotation.to(model.rotation, {y: "+=0.314159", duration: 0.5}, ">");
+      rotation.to(model.rotation, {y: "+=0.20944", duration: 0.5}, ">");
+      rotation.to(model.rotation, {y: "+=6.28318531", repeat: -1, duration: 15}, ">");
+    } else {
+      rotation.to(model.rotation, {y: "+=6.28318531", repeat: -1, duration: 5});
+    }
+    meteorClockwiseRotation = true;
+  } else {
+    if(defaultRotationSpeed) {
+      rotation.to(model.rotation, {y: "-=0.418879", duration: 0.5});
+      rotation.to(model.rotation, {y: "-=0.349066", duration: 0.5}, ">");
+      rotation.to(model.rotation, {y: "-=0.314159", duration: 0.5}, ">");
+      rotation.to(model.rotation, {y: "-=0.20944", duration: 0.5}, ">");
+      rotation.to(model.rotation, {y: "-=6.28318531", repeat: -1, duration: 15}, ">");
+    } else {
+      rotation.to(model.rotation, {y: "-=6.28318531", repeat: -1, duration: 5});
+    }
+    meteorClockwiseRotation = false;
+  }
+}
+
 const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.jpg');
 
 scene.background = galaxyImg;
 
-let scroll = false;
+let scroll = true;
 function onScrollWheel(e) {
-  console.log(scrollPercent);
-  if (e.deltaY > 0) {
+  if (e.deltaY > 0 && scrollPercent < 99 && scrollPercent > 0) {
     // scrolling down
-  if(scrollPercent < 100) (model.rotation.y += 0.03)
-  scroll = true;
+    scroll = true;
+  } else if (e.deltaY < 0 && scrollPercent < 100 && scrollPercent > 0) {
+    scroll = false;
   }
-  else if (e.deltaY < 0) {
-  if(scrollPercent > 0) (model.rotation.y -= 0.03)
-  scroll = false;
-  }
+  renderer.render(scene, camera);
 }
 
 function lerp(x, y, a) {
@@ -82,60 +205,14 @@ function scalePercent(start, end) {
 
 const animationScripts = [];
 
-animationScripts.push({
-  start: 0,
-  end: 100,
-  func: () => {
-    if (scroll) {
-      model.rotation.y += 0.008;
-    } else {
-      model.rotation.y -= 0.008;
-    }
-  }
-})
-
-animationScripts.push({
-  start: 0,
-  end: 50,
-  func: () => {
-    model.position.x = lerp(4.5, -.5, scalePercent(0, 50));
-    model.position.y = lerp(1.2, -1, scalePercent(0, 50))
-    model.position.z = lerp(0, 4.8, scalePercent(0, 50))
-  }
-})
-
-animationScripts.push({
-  start: 50,
-  end: 100,
-  func: () => {
-    model.position.x = lerp(-.5, 1, scalePercent(50, 100));
-    model.position.y = lerp(-1, 0, scalePercent(50, 100))
-    model.position.z = lerp(4.8, 7.2, scalePercent(50, 100))
-  }
-})
-
-
-animationScripts.push({
-  start: 40,
-  end: 70,
-  func: () => {
-    if (scroll) {
-      model.rotation.y += 0.008;
-    } else {
-      model.rotation.y -= 0.008;
-    }
-  }
-})
-
-
 function playScrollAnimations() {
   animationScripts.forEach((a) => {
     if (scrollPercent > a.start && scrollPercent < a.end) {
       a.func()
     }
-    else if (scrollPercent === a.end || scrollPercent === a.start) {
-      model.rotation.y += 0.005;
-    }
+    // else if (scrollPercent === a.end || scrollPercent === a.start) {
+    //   model.rotation.y += 0.005;
+    // }
   })
 }
 
@@ -150,22 +227,16 @@ document.body.onscroll = () => {
         document.documentElement.clientHeight)) *
     100
     ;
-  // console.log(scrollPercent.toFixed(2), "scrollPercent");
   // console.log(model.rotation.x, "rotation");
 }
 
-window.addEventListener("wheel", onScrollWheel);
-
-
 function onWindowResize() {
-
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
 
   renderer.setSize(window.innerWidth, window.innerHeight);
   render();
 }
-
 
 function render() {
   // controls.update();
@@ -179,10 +250,7 @@ function render() {
 
 window.scrollTo({ top: 0, behavior: 'smooth' });
 
-
-
 // JS functionality for text animation
-
 const banner = document.querySelector('.banner');
 const client = document.querySelectorAll('.client')
 
