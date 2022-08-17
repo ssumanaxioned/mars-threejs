@@ -155,10 +155,10 @@ const fastRotationOnScroll = () => {
 // sets Rotation Speed & Direction for Meteor
 const setRotationSpeedAndDirectionForObject = (defaultRotationSpeed) => {
   if(scroll) {
-    rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: `${defaultRotationSpeed ? 15 : 7.5}`});
+    rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: `${defaultRotationSpeed ? 15 : 5}`});
     meteorClockwiseRotation = true;
   } else {
-    rotation.to(model.rotation, {y: "-=6.28318531", ease: 'none', repeat: -1, duration: `${defaultRotationSpeed ? 15 : 7.5}`});
+    rotation.to(model.rotation, {y: "-=6.28318531", ease: 'none', repeat: -1, duration: `${defaultRotationSpeed ? 15 : 5}`});
     meteorClockwiseRotation = false;
   }
 }
