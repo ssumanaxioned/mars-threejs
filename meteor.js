@@ -155,10 +155,26 @@ const fastRotationOnScroll = () => {
 // sets Rotation Speed & Direction for Meteor
 const setRotationSpeedAndDirectionForObject = (defaultRotationSpeed) => {
   if(scroll) {
-    rotation.to(model.rotation, {y: "+=6.28318531", ease: `${defaultRotationSpeed ? "none" : "power4.out"}`, repeat: -1, duration: `${defaultRotationSpeed ? 15 : 3}`});
+    if(defaultRotationSpeed) {
+      rotation.to(model.rotation, {y: "+=0.418879", duration: 0.5});
+      rotation.to(model.rotation, {y: "+=0.349066", duration: 0.5}, ">");
+      rotation.to(model.rotation, {y: "+=0.314159", duration: 0.5}, ">");
+      rotation.to(model.rotation, {y: "+=0.20944", duration: 0.5}, ">");
+      rotation.to(model.rotation, {y: "+=6.28318531", repeat: -1, duration: 15}, ">");
+    } else {
+      rotation.to(model.rotation, {y: "+=6.28318531", repeat: -1, duration: 5});
+    }
     meteorClockwiseRotation = true;
   } else {
-    rotation.to(model.rotation, {y: "-=6.28318531", ease: `${defaultRotationSpeed ? "none" : "power4.out"}`, repeat: -1, duration: `${defaultRotationSpeed ? 15 : 3}`});
+    if(defaultRotationSpeed) {
+      rotation.to(model.rotation, {y: "-=0.418879", duration: 0.5});
+      rotation.to(model.rotation, {y: "-=0.349066", duration: 0.5}, ">");
+      rotation.to(model.rotation, {y: "-=0.314159", duration: 0.5}, ">");
+      rotation.to(model.rotation, {y: "-=0.20944", duration: 0.5}, ">");
+      rotation.to(model.rotation, {y: "-=6.28318531", repeat: -1, duration: 15}, ">");
+    } else {
+      rotation.to(model.rotation, {y: "-=6.28318531", repeat: -1, duration: 5});
+    }
     meteorClockwiseRotation = false;
   }
 }
