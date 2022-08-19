@@ -66,6 +66,7 @@ loader.load(
     // Initialize 'rotation' timeline and give default values for Meteor rotation speed & direction
     clearRotationAndGiveDefaultRotation();
     meteorClockwiseRotation = true;
+    meteorDefaultRotationSpeed = true;
 
     // Main timeline with ScrollTrigger
     const tl = gsap.timeline({
@@ -124,7 +125,7 @@ const setModelCoordinates = () => {
 
   // Timer for detecting page scrolling stop to change the Meteor speed back to normal
   clearTimeout(timer);
-  timer = setTimeout(defaultRotation, 200);
+  timer = setTimeout(defaultRotation, 500);
 }
 
 // Gives Default Rotation speed to Meteor
@@ -133,18 +134,18 @@ const defaultRotation = () => {
     rotation.clear();
     showInConsoleLog("In defaultRotation(): Rotation timeline cleared");
     setRotationSpeedAndDirectionForObject(true);
+    meteorDefaultRotationSpeed = true;
   }
 }
 
 // Gives faster Rotation speed to Meteor onscroll
 const fastRotationOnScroll = () => {
   if(meteorDefaultRotationSpeed) {
-    rotation.clear();
     showInConsoleLog("In fastRotationOnScroll(): Rotation timeline cleared");
     setRotationSpeedAndDirectionForObject(false);
+    meteorDefaultRotationSpeed = false;
   } else {
     if(scroll != meteorClockwiseRotation) {
-      rotation.clear();
       setRotationSpeedAndDirectionForObject(false);
     }
   }
@@ -152,6 +153,7 @@ const fastRotationOnScroll = () => {
 
 // sets Rotation Speed & Direction for Meteor
 const setRotationSpeedAndDirectionForObject = (defaultRotationSpeed) => {
+  rotation.clear();
   if(scroll) {
     if(defaultRotationSpeed) {
       console.log("Default Rotation: Clockwise");
@@ -162,8 +164,7 @@ const setRotationSpeedAndDirectionForObject = (defaultRotationSpeed) => {
         .to(model.rotation, {y: "+=0.2617995", ease: 'none', duration: 0.5, onComplete: clearRotationAndGiveDefaultRotation}, ">");
     } else {
       console.log("Fast Rotation: Clockwise");
-      rotation.to(model.rotation, {y: "+=6.28318531", repeat: -1, duration: 5});
-      meteorDefaultRotationSpeed = false;
+      rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: 5});
     }
     meteorClockwiseRotation = true;
   } else {
@@ -176,8 +177,7 @@ const setRotationSpeedAndDirectionForObject = (defaultRotationSpeed) => {
         .to(model.rotation, {y: "-=0.2617995", ease: 'none', duration: 0.5, onComplete: clearRotationAndGiveDefaultRotation}, ">");
     } else {
       console.log("Fast Rotation: AntiClockwise");
-      rotation.to(model.rotation, {y: "-=6.28318531", repeat: -1, duration: 5});
-      meteorDefaultRotationSpeed = false;
+      rotation.to(model.rotation, {y: "-=6.28318531", ease: 'none', repeat: -1, duration: 5});
     }
     meteorClockwiseRotation = false;
   }
@@ -192,7 +192,6 @@ const clearRotationAndGiveDefaultRotation = () => {
     rotation.clear();
     rotation.to(model.rotation, {y: "-=6.28318531", ease: 'none', repeat: -1, duration: 15});
   }
-  meteorDefaultRotationSpeed = true;
 }
 
 const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.jpg');
