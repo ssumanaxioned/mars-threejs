@@ -1,6 +1,11 @@
+* {
+  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+  box-sizing: border-box;       
+}
+
 body {
   margin: 0;
-  position: relative;
   color: #fff;
   font-family: 'Roboto', sans-serif;
   overflow-x: hidden;
@@ -15,11 +20,7 @@ canvas {
   left: 0;
 }
 
-.container {
-  width: 100vw;
-  padding-bottom: 5rem;
-  position: relative;
-}
+.container { width: 100vw; }
 
 .wrapper {
   width: 60%;
@@ -69,4 +70,5 @@ svg {
 
 }
 
+.client:last-child { padding-bottom: 200px; }
 .reveal { opacity: 1; }
