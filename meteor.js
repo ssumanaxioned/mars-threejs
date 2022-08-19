@@ -100,8 +100,7 @@ loader.load(
     render();
 
     // Initialize 'rotation' timeline and give default values for Meteor rotation speed & direction
-    rotation.clear();
-    rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: 15});
+    clearRotationAndGiveDefaultRotation();
     meteorClockwiseRotation = true;
     meteorDefaultRotationSpeed = true;
 
@@ -139,10 +138,9 @@ loader.load(
   }
 );
 
-// Prints passed value/Message in console.log. set 'showConsoleLogs' => true to show them
-const showInConsoleLog = (value) => {
-  const showConsoleLogs = false;
-  if(showConsoleLogs) {
+// Prints passed value/Message in console.log. pass 'showLog' => true to display
+const showInConsoleLog = (showLog, value) => {
+  if(showLog) {
     console.log(value);
   }
 }
@@ -163,14 +161,14 @@ const setModelCoordinates = () => {
 
   // Timer for detecting page scrolling stop to change the Meteor speed back to normal
   clearTimeout(timer);
-  timer = setTimeout(defaultRotation, 200);
+  timer = setTimeout(defaultRotation, 500);
 }
 
 // Gives Default Rotation speed to Meteor
 const defaultRotation = () => {
   if(!meteorDefaultRotationSpeed) {
     rotation.clear();
-    showInConsoleLog("In defaultRotation(): Rotation timeline cleared");
+    showInConsoleLog(false, "In defaultRotation(): Rotation timeline cleared");
     setRotationSpeedAndDirectionForObject(true);
     meteorDefaultRotationSpeed = true;
   }
@@ -179,13 +177,11 @@ const defaultRotation = () => {
 // Gives faster Rotation speed to Meteor onscroll
 const fastRotationOnScroll = () => {
   if(meteorDefaultRotationSpeed) {
-    rotation.clear();
-    showInConsoleLog("In fastRotationOnScroll(): Rotation timeline cleared");
+    showInConsoleLog(false, "In fastRotationOnScroll(): Rotation timeline cleared");
     setRotationSpeedAndDirectionForObject(false);
     meteorDefaultRotationSpeed = false;
   } else {
     if(scroll != meteorClockwiseRotation) {
-      rotation.clear();
       setRotationSpeedAndDirectionForObject(false);
     }
   }
@@ -193,12 +189,44 @@ const fastRotationOnScroll = () => {
 
 // sets Rotation Speed & Direction for Meteor
 const setRotationSpeedAndDirectionForObject = (defaultRotationSpeed) => {
+  rotation.clear();
   if(scroll) {
-    rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: `${defaultRotationSpeed ? 15 : 5}`});
+    if(defaultRotationSpeed) {
+      showInConsoleLog(false, "Default Rotation: Clockwise");
+      rotation.to(model.rotation, {y: "+=0.5236", ease: 'none', duration: 0.5})
+        .to(model.rotation, {y: "+=0.418879", ease: 'none', duration: 0.5}, ">")
+        .to(model.rotation, {y: "+=0.349066", ease: 'none', duration: 0.5}, ">")
+        .to(model.rotation, {y: "+=0.3141595", ease: 'none', duration: 0.5}, ">")
+        .to(model.rotation, {y: "+=0.2617995", ease: 'none', duration: 0.5, onComplete: clearRotationAndGiveDefaultRotation}, ">");
+    } else {
+      showInConsoleLog(false, "Fast Rotation: Clockwise");
+      rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: 5});
+    }
     meteorClockwiseRotation = true;
   } else {
-    rotation.to(model.rotation, {y: "-=6.28318531", ease: 'none', repeat: -1, duration: `${defaultRotationSpeed ? 15 : 5}`});
+    if(defaultRotationSpeed) {
+      showInConsoleLog(false, "Default Rotation: AntiClockwise");
+      rotation.to(model.rotation, {y: "-=0.5236", ease: 'none', duration: 0.5})
+        .to(model.rotation, {y: "-=0.418879", ease: 'none', duration: 0.5}, ">")
+        .to(model.rotation, {y: "-=0.349066", ease: 'none', duration: 0.5}, ">")
+        .to(model.rotation, {y: "-=0.3141595", ease: 'none', duration: 0.5}, ">")
+        .to(model.rotation, {y: "-=0.2617995", ease: 'none', duration: 0.5, onComplete: clearRotationAndGiveDefaultRotation}, ">");
+    } else {
+      showInConsoleLog(false, "Fast Rotation: AntiClockwise");
+      rotation.to(model.rotation, {y: "-=6.28318531", ease: 'none', repeat: -1, duration: 5});
+    }
     meteorClockwiseRotation = false;
+  }
+}
+
+// Clears 'rotation timeline' and gives default rotation speed to Meteor
+const clearRotationAndGiveDefaultRotation = () => {
+  if(scroll) {
+    rotation.clear();
+    rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: 15});
+  } else {
+    rotation.clear();
+    rotation.to(model.rotation, {y: "-=6.28318531", ease: 'none', repeat: -1, duration: 15});
   }
 }
 
