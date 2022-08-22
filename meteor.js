@@ -3,6 +3,9 @@ gsap.registerPlugin(MotionPathPlugin, ScrollTrigger);
 const body = document.querySelector("body");
 const container = body.querySelector(".container")
 const canvas = body.querySelector('#mars');
+const preloader = body.querySelector(".preloader");
+
+const displayNoneClassName = "display-none";
 
 let scroll = true;
 let scrollPercent = 0;
@@ -98,6 +101,7 @@ loader.load(
     // gui.add(model.scale, 'z', 0, .1).name('Z position')
     scene.add(model);
     render();
+    removePreloader();
 
     // Initialize 'rotation' timeline and give default values for Meteor rotation speed & direction
     clearRotationAndGiveDefaultRotation();
@@ -143,6 +147,11 @@ const showInConsoleLog = (showLog, value) => {
   if(showLog) {
     console.log(value);
   }
+}
+
+// Remove Preloader thus Displaying Scene
+const removePreloader = () => {
+  preloader.classList.add(displayNoneClassName);
 }
 
 // Update 'Models' position on path onscroll
