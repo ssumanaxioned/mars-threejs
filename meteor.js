@@ -4,6 +4,44 @@ const body = document.querySelector("body");
 const container = body.querySelector(".container")
 const canvas = body.querySelector('#mars');
 
+let scroll = true;
+let scrollPercent = 0;
+
+const onScroll = (args) => {
+  //calculate the current scroll progress as a percentage
+  scrollPercent =
+    ((document.documentElement.scrollTop || body.scrollTop) /
+      ((document.documentElement.scrollHeight ||
+        body.scrollHeight) -
+        document.documentElement.clientHeight)) *
+    100;
+
+  if(args.direction == "down") {
+    scroll = true;
+  } else if(args.direction == "up") {
+    scroll = false;
+  }
+}
+
+const locoScroll = new LocomotiveScroll({
+  el: container,
+  smooth: true,
+  getDirection: true
+});
+
+locoScroll.on("scroll", ScrollTrigger.update);
+locoScroll.on("scroll", onScroll);
+
+ScrollTrigger.scrollerProxy(".container", {
+  scrollTop(value) {
+    return arguments.length ? locoScroll.scrollTo(value, 0, 0) : locoScroll.scroll.instance.scroll.y;
+  }, 
+  getBoundingClientRect() {
+    return {top: 0, left: 0, width: window.innerWidth, height: window.innerHeight};
+  },
+  pinType: container.style.transform ? "transform" : "fixed"
+});
+
 let meteorDefaultRotationSpeed; // 'true' for default rotation speed of Meteor
 let meteorClockwiseRotation; // contains the current direction the Meteor is rotating
 const rotation = gsap.timeline(); // GSAP timeline for Meteor rotation
@@ -62,8 +100,7 @@ loader.load(
     render();
 
     // Initialize 'rotation' timeline and give default values for Meteor rotation speed & direction
-    rotation.clear();
-    rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: 15});
+    clearRotationAndGiveDefaultRotation();
     meteorClockwiseRotation = true;
     meteorDefaultRotationSpeed = true;
 
@@ -71,6 +108,7 @@ loader.load(
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: ".container",
+        scroller: ".container",
         start: `top ${container.getBoundingClientRect().top}`,
         end: "bottom bottom",
         scrub: 1.5
@@ -98,12 +136,11 @@ loader.load(
   (error) => {
     console.log(error)
   }
-)
+);
 
-// Prints passed value/Message in console.log. set 'showConsoleLogs' => true to show them
-const showInConsoleLog = (value) => {
-  const showConsoleLogs = false;
-  if(showConsoleLogs) {
+// Prints passed value/Message in console.log. pass 'showLog' => true to display
+const showInConsoleLog = (showLog, value) => {
+  if(showLog) {
     console.log(value);
   }
 }
@@ -124,14 +161,14 @@ const setModelCoordinates = () => {
 
   // Timer for detecting page scrolling stop to change the Meteor speed back to normal
   clearTimeout(timer);
-  timer = setTimeout(defaultRotation, 200);
+  timer = setTimeout(defaultRotation, 500);
 }
 
 // Gives Default Rotation speed to Meteor
 const defaultRotation = () => {
   if(!meteorDefaultRotationSpeed) {
     rotation.clear();
-    showInConsoleLog("In defaultRotation(): Rotation timeline cleared");
+    showInConsoleLog(false, "In defaultRotation(): Rotation timeline cleared");
     setRotationSpeedAndDirectionForObject(true);
     meteorDefaultRotationSpeed = true;
   }
@@ -140,13 +177,11 @@ const defaultRotation = () => {
 // Gives faster Rotation speed to Meteor onscroll
 const fastRotationOnScroll = () => {
   if(meteorDefaultRotationSpeed) {
-    rotation.clear();
-    showInConsoleLog("In fastRotationOnScroll(): Rotation timeline cleared");
+    showInConsoleLog(false, "In fastRotationOnScroll(): Rotation timeline cleared");
     setRotationSpeedAndDirectionForObject(false);
     meteorDefaultRotationSpeed = false;
   } else {
     if(scroll != meteorClockwiseRotation) {
-      rotation.clear();
       setRotationSpeedAndDirectionForObject(false);
     }
   }
@@ -154,45 +189,50 @@ const fastRotationOnScroll = () => {
 
 // sets Rotation Speed & Direction for Meteor
 const setRotationSpeedAndDirectionForObject = (defaultRotationSpeed) => {
+  rotation.clear();
   if(scroll) {
     if(defaultRotationSpeed) {
-      rotation.to(model.rotation, {y: "+=0.418879", duration: 0.5});
-      rotation.to(model.rotation, {y: "+=0.349066", duration: 0.5}, ">");
-      rotation.to(model.rotation, {y: "+=0.314159", duration: 0.5}, ">");
-      rotation.to(model.rotation, {y: "+=0.20944", duration: 0.5}, ">");
-      rotation.to(model.rotation, {y: "+=6.28318531", repeat: -1, duration: 15}, ">");
+      showInConsoleLog(false, "Default Rotation: Clockwise");
+      rotation.to(model.rotation, {y: "+=0.5236", ease: 'none', duration: 0.5})
+        .to(model.rotation, {y: "+=0.418879", ease: 'none', duration: 0.5}, ">")
+        .to(model.rotation, {y: "+=0.349066", ease: 'none', duration: 0.5}, ">")
+        .to(model.rotation, {y: "+=0.3141595", ease: 'none', duration: 0.5}, ">")
+        .to(model.rotation, {y: "+=0.2617995", ease: 'none', duration: 0.5, onComplete: clearRotationAndGiveDefaultRotation}, ">");
     } else {
-      rotation.to(model.rotation, {y: "+=6.28318531", repeat: -1, duration: 5});
+      showInConsoleLog(false, "Fast Rotation: Clockwise");
+      rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: 5});
     }
     meteorClockwiseRotation = true;
   } else {
     if(defaultRotationSpeed) {
-      rotation.to(model.rotation, {y: "-=0.418879", duration: 0.5});
-      rotation.to(model.rotation, {y: "-=0.349066", duration: 0.5}, ">");
-      rotation.to(model.rotation, {y: "-=0.314159", duration: 0.5}, ">");
-      rotation.to(model.rotation, {y: "-=0.20944", duration: 0.5}, ">");
-      rotation.to(model.rotation, {y: "-=6.28318531", repeat: -1, duration: 15}, ">");
+      showInConsoleLog(false, "Default Rotation: AntiClockwise");
+      rotation.to(model.rotation, {y: "-=0.5236", ease: 'none', duration: 0.5})
+        .to(model.rotation, {y: "-=0.418879", ease: 'none', duration: 0.5}, ">")
+        .to(model.rotation, {y: "-=0.349066", ease: 'none', duration: 0.5}, ">")
+        .to(model.rotation, {y: "-=0.3141595", ease: 'none', duration: 0.5}, ">")
+        .to(model.rotation, {y: "-=0.2617995", ease: 'none', duration: 0.5, onComplete: clearRotationAndGiveDefaultRotation}, ">");
     } else {
-      rotation.to(model.rotation, {y: "-=6.28318531", repeat: -1, duration: 5});
+      showInConsoleLog(false, "Fast Rotation: AntiClockwise");
+      rotation.to(model.rotation, {y: "-=6.28318531", ease: 'none', repeat: -1, duration: 5});
     }
     meteorClockwiseRotation = false;
+  }
+}
+
+// Clears 'rotation timeline' and gives default rotation speed to Meteor
+const clearRotationAndGiveDefaultRotation = () => {
+  if(scroll) {
+    rotation.clear();
+    rotation.to(model.rotation, {y: "+=6.28318531", ease: 'none', repeat: -1, duration: 15});
+  } else {
+    rotation.clear();
+    rotation.to(model.rotation, {y: "-=6.28318531", ease: 'none', repeat: -1, duration: 15});
   }
 }
 
 const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.jpg');
 
 scene.background = galaxyImg;
-
-let scroll = true;
-function onScrollWheel(e) {
-  if (e.deltaY > 0 && scrollPercent < 99 && scrollPercent > 0) {
-    // scrolling down
-    scroll = true;
-  } else if (e.deltaY < 0 && scrollPercent < 100 && scrollPercent > 0) {
-    scroll = false;
-  }
-  renderer.render(scene, camera);
-}
 
 function lerp(x, y, a) {
   return (1 - a) * x + a * y;
@@ -216,20 +256,6 @@ function playScrollAnimations() {
   })
 }
 
-let scrollPercent = 0;
-
-document.body.onscroll = () => {
-  //calculate the current scroll progress as a percentage
-  scrollPercent =
-    ((document.documentElement.scrollTop || document.body.scrollTop) /
-      ((document.documentElement.scrollHeight ||
-        document.body.scrollHeight) -
-        document.documentElement.clientHeight)) *
-    100
-    ;
-  // console.log(model.rotation.x, "rotation");
-}
-
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
@@ -242,13 +268,12 @@ function render() {
   // controls.update();
   // let axis = model.quaternion;
   // model.rotateOnAxis(new THREE.Vector3(0, 1, 0), 0.01);
-  window.addEventListener("wheel", onScrollWheel);
   playScrollAnimations();
   requestAnimationFrame(render);
   renderer.render(scene, camera);
 }
 
-window.scrollTo({ top: 0, behavior: 'smooth' });
+locoScroll.scrollTo({ target: "top" });
 
 // JS functionality for text animation
 const banner = document.querySelector('.banner');
@@ -271,4 +296,8 @@ const handleIntersect = (entries) => {
 
 let observer = new IntersectionObserver(handleIntersect, options)
 
-docElem.forEach(elem => observer.observe(elem))
+docElem.forEach(elem => observer.observe(elem));
+
+ScrollTrigger.addEventListener("refresh", () => locoScroll.update());
+
+ScrollTrigger.refresh();
