@@ -125,9 +125,7 @@ window.addEventListener("load", (event) => {
     (error) => {
       console.log(error)
     }
-  )
-  const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.jpg');
-  scene.background = galaxyImg;
+  );
 });
 
 // Remove Preloader thus Displaying Scene
