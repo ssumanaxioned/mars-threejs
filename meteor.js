@@ -43,66 +43,92 @@ const dracoLoader = new THREE.DRACOLoader();
 dracoLoader.setDecoderPath('/examples/js/libs/draco/gltf');
 loader.setDRACOLoader(dracoLoader);
 
-loader.load(
-  'models/meteor.gltf',
-  (gltf) => {
-    model = gltf.scene;
-    model.position.x = 4.67717868228404;
-    model.position.y = 1.994219033674963;
-    model.position.z = 0;
-
-    model.scale.x = 0.02;
-    model.scale.y = 0.02;
-    model.scale.z = 0.02;
-
-    scene.add(model);
-    render();
-    removePreloader();
-
-    // Initialize 'rotation' timeline and give default values for Meteor rotation speed & direction
-    clearRotationAndGiveDefaultRotation();
-    meteorClockwiseRotation = true;
-    meteorDefaultRotationSpeed = true;
-
-    // Main timeline with ScrollTrigger
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: ".container",
-        start: `top ${container.getBoundingClientRect().top}`,
-        end: "bottom bottom",
-        scrub: 1.5
-      },
-      ease: "power4.out"
-    });
-
-    // give Meteor path
-    tl.to(model.position, {
-      motionPath: {
-        path: "#path",
-        align: "#path"
-      },
-      ease: "none",
-      onUpdate: () => {
-        setModelCoordinates();
-      }
-    })
-    // increase/decrease Meteor size on scroll
-    .to(model.scale, {x: "+=0.03", y: "+=0.03", z: "+=0.03"}, "<");
-  },
-  (xhr) => {
-    // console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-  },
-  (error) => {
-    console.log(error)
-  }
-)
-
 // Prints passed value/Message in console.log. pass 'showLog' => true to display
 const showInConsoleLog = (showLog, value) => {
   if(showLog) {
     console.log(value);
   }
 }
+
+// JS functionality for text animation
+const banner = body.querySelector('.banner');
+const client = body.querySelectorAll('.client');
+
+const docElem = [banner, ...client];
+
+showInConsoleLog(true, docElem);
+
+const options = {
+  rootMargin: '10px',
+  threshold: .5
+}
+
+const handleIntersect = (entries) => {
+  entries.forEach(entry => {
+    entry.target.classList.toggle('reveal', entry.isIntersecting)
+  });
+}
+
+let observer = new IntersectionObserver(handleIntersect, options);
+docElem.forEach(elem => observer.observe(elem));
+
+window.addEventListener("load", (event) => {
+  loader.load(
+    'models/meteor.gltf',
+    (gltf) => {
+      model = gltf.scene;
+      model.position.x = 4.67717868228404;
+      model.position.y = 1.994219033674963;
+      model.position.z = 0;
+  
+      model.scale.x = 0.02;
+      model.scale.y = 0.02;
+      model.scale.z = 0.02;
+  
+      scene.add(model);
+      render();
+      removePreloader();
+  
+      // Initialize 'rotation' timeline and give default values for Meteor rotation speed & direction
+      clearRotationAndGiveDefaultRotation();
+      meteorClockwiseRotation = true;
+      meteorDefaultRotationSpeed = true;
+  
+      // Main timeline with ScrollTrigger
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: ".container",
+          start: `top ${container.getBoundingClientRect().top}`,
+          end: "bottom bottom",
+          scrub: 1.5
+        },
+        ease: "power4.out"
+      });
+  
+      // give Meteor path
+      tl.to(model.position, {
+        motionPath: {
+          path: "#path",
+          align: "#path"
+        },
+        ease: "none",
+        onUpdate: () => {
+          setModelCoordinates();
+        }
+      })
+      // increase/decrease Meteor size on scroll
+      .to(model.scale, {x: "+=0.03", y: "+=0.03", z: "+=0.03"}, "<");
+    },
+    (xhr) => {
+      // console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+    },
+    (error) => {
+      console.log(error)
+    }
+  )
+  const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.jpg');
+  scene.background = galaxyImg;
+});
 
 // Remove Preloader thus Displaying Scene
 const removePreloader = () => {
@@ -194,10 +220,6 @@ const clearRotationAndGiveDefaultRotation = () => {
   }
 }
 
-const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.jpg');
-
-scene.background = galaxyImg;
-
 let scroll = true;
 function onScrollWheel(e) {
   if (e.deltaY > 0 && scrollPercent < 99 && scrollPercent > 0) {
@@ -209,17 +231,7 @@ function onScrollWheel(e) {
   renderer.render(scene, camera);
 }
 
-function lerp(x, y, a) {
-  return (1 - a) * x + a * y;
-}
-
-// Used to fit the lerps to start and end at specific scrolling percentages
-function scalePercent(start, end) {
-  return (scrollPercent - start) / (end - start)
-}
-
 let scrollPercent = 0;
-
 document.body.onscroll = () => {
   //calculate the current scroll progress as a percentage
   scrollPercent =
@@ -245,25 +257,3 @@ function render() {
 }
 
 window.scrollTo({ top: 0, behavior: 'smooth' });
-
-// JS functionality for text animation
-const banner = document.querySelector('.banner');
-const client = document.querySelectorAll('.client')
-
-const docElem = [banner, ...client]
-
-console.log(docElem)
-
-const options = {
-  rootMargin: '10px',
-  threshold: .5
-}
-
-const handleIntersect = (entries) => {
-  entries.forEach(entry => {
-    entry.target.classList.toggle('reveal', entry.isIntersecting)
-  })
-}
-
-let observer = new IntersectionObserver(handleIntersect, options)
-docElem.forEach(elem => observer.observe(elem))
