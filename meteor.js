@@ -1,7 +1,7 @@
 gsap.registerPlugin(MotionPathPlugin, ScrollTrigger);
 
 const body = document.querySelector("body");
-const container = body.querySelector(".container")
+const container = body.querySelector(".container");
 const canvas = body.querySelector('#mars');
 const preloader = body.querySelector(".preloader");
 
@@ -16,11 +16,11 @@ const rotation = gsap.timeline(); // GSAP timeline for Meteor rotation
 const scene = new THREE.Scene();
 let model = null;
 
-const light = new THREE.AmbientLight(0xffffff, 1)
+const light = new THREE.AmbientLight(0xffffff, 1);
 light.position.z = 5;
 scene.add(light);
 
-const light1 = new THREE.DirectionalLight(0xffffff, .7)
+const light1 = new THREE.DirectionalLight(0xffffff, .7);
 light1.position.z = 5;
 scene.add(light1);
 
@@ -65,7 +65,7 @@ const options = {
 
 const handleIntersect = (entries) => {
   entries.forEach(entry => {
-    entry.target.classList.toggle('reveal', entry.isIntersecting)
+    entry.target.classList.toggle('reveal', entry.isIntersecting);
   });
 }
 
@@ -123,7 +123,7 @@ window.addEventListener("load", (event) => {
       // console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
     },
     (error) => {
-      console.log(error)
+      console.log(error);
     }
   );
 });
