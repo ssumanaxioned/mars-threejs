@@ -36,7 +36,7 @@ docElem.forEach(elem => observer.observe(elem));
 
 window.addEventListener("load", (event) => {
   const displayNoneClassName = "display-none";
-  
+
   let scroll = true;
   let scrollPercent = 0;
 
@@ -82,11 +82,11 @@ window.addEventListener("load", (event) => {
   const scene = new THREE.Scene();
   let model = null;
 
-  const light = new THREE.AmbientLight(0xffffff, 1)
+  const light = new THREE.AmbientLight(0xffffff, 1);
   light.position.z = 5;
   scene.add(light);
 
-  const light1 = new THREE.DirectionalLight(0xffffff, .7)
+  const light1 = new THREE.DirectionalLight(0xffffff, 1);
   light1.position.z = 5;
   scene.add(light1);
 
@@ -106,11 +106,11 @@ window.addEventListener("load", (event) => {
   const loader = new THREE.GLTFLoader();
 
   const dracoLoader = new THREE.DRACOLoader();
-  dracoLoader.setDecoderPath('/examples/js/libs/draco/gltf');
+  dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.142.0/examples/js/libs/draco/gltf/');
   loader.setDRACOLoader(dracoLoader);
 
   loader.load(
-    'models/meteor.gltf',
+    'models/meteor3.glb',
     (gltf) => {
       model = gltf.scene;
       model.position.x = 4.67717868228404;
