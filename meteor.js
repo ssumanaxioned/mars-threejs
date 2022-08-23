@@ -231,19 +231,6 @@ const clearRotationAndGiveDefaultRotation = () => {
   }
 }
 
-const galaxyImg = new THREE.TextureLoader().load('assets/galaxy.jpg');
-
-scene.background = galaxyImg;
-
-function lerp(x, y, a) {
-  return (1 - a) * x + a * y;
-}
-
-// Used to fit the lerps to start and end at specific scrolling percentages
-function scalePercent(start, end) {
-  return (scrollPercent - start) / (end - start)
-}
-
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
@@ -263,9 +250,9 @@ locoScroll.scrollTo({ target: "top" });
 const banner = document.querySelector('.banner');
 const client = document.querySelectorAll('.client')
 
-const docElem = [banner, ...client]
+const docElem = [banner, ...client];
 
-console.log(docElem)
+showInConsoleLog(true, docElem);
 
 const options = {
   rootMargin: '10px',
@@ -274,14 +261,12 @@ const options = {
 
 const handleIntersect = (entries) => {
   entries.forEach(entry => {
-    entry.target.classList.toggle('reveal', entry.isIntersecting)
+    entry.target.classList.toggle('reveal', entry.isIntersecting);
   })
 }
 
-let observer = new IntersectionObserver(handleIntersect, options)
-
+const observer = new IntersectionObserver(handleIntersect, options);
 docElem.forEach(elem => observer.observe(elem));
 
 ScrollTrigger.addEventListener("refresh", () => locoScroll.update());
-
 ScrollTrigger.refresh();
