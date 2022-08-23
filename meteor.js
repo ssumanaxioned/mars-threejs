@@ -3,6 +3,9 @@ gsap.registerPlugin(MotionPathPlugin, ScrollTrigger);
 const body = document.querySelector("body");
 const container = body.querySelector(".container")
 const canvas = body.querySelector('#mars');
+const preloader = body.querySelector(".preloader");
+
+const displayNoneClassName = "display-none";
 
 let scroll = true;
 let scrollPercent = 0;
@@ -48,7 +51,6 @@ const rotation = gsap.timeline(); // GSAP timeline for Meteor rotation
 
 const scene = new THREE.Scene();
 let model = null;
-// const gui = new dat.GUI();
 
 const light = new THREE.AmbientLight(0xffffff, 1)
 light.position.z = 5;
@@ -89,15 +91,9 @@ loader.load(
     model.scale.y = 0.02;
     model.scale.z = 0.02;
 
-    // model.rotation.x = 0;
-    // gui.add(model.position, 'x', -10, 10).name('X position')
-    // gui.add(model.position, 'y', -10, 10).name('Y position')
-    // gui.add(model.position, 'z', -10, 10).name('Z position')
-    // gui.add(model.scale, 'x', 0, .1).name('X position')
-    // gui.add(model.scale, 'y', 0, .1).name('Y position')
-    // gui.add(model.scale, 'z', 0, .1).name('Z position')
     scene.add(model);
     render();
+    removePreloader();
 
     // Initialize 'rotation' timeline and give default values for Meteor rotation speed & direction
     clearRotationAndGiveDefaultRotation();
@@ -143,6 +139,11 @@ const showInConsoleLog = (showLog, value) => {
   if(showLog) {
     console.log(value);
   }
+}
+
+// Remove Preloader thus Displaying Scene
+const removePreloader = () => {
+  preloader.classList.add(displayNoneClassName);
 }
 
 // Update 'Models' position on path onscroll
@@ -243,19 +244,6 @@ function scalePercent(start, end) {
   return (scrollPercent - start) / (end - start)
 }
 
-const animationScripts = [];
-
-function playScrollAnimations() {
-  animationScripts.forEach((a) => {
-    if (scrollPercent > a.start && scrollPercent < a.end) {
-      a.func()
-    }
-    // else if (scrollPercent === a.end || scrollPercent === a.start) {
-    //   model.rotation.y += 0.005;
-    // }
-  })
-}
-
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
@@ -265,10 +253,6 @@ function onWindowResize() {
 }
 
 function render() {
-  // controls.update();
-  // let axis = model.quaternion;
-  // model.rotateOnAxis(new THREE.Vector3(0, 1, 0), 0.01);
-  playScrollAnimations();
   requestAnimationFrame(render);
   renderer.render(scene, camera);
 }
