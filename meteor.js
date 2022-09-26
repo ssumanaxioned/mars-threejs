@@ -38,17 +38,8 @@ window.addEventListener("load", (event) => {
   const displayNoneClassName = "display-none";
 
   let scroll = true;
-  let scrollPercent = 0;
 
-  const onScroll = (args) => {
-    //calculate the current scroll progress as a percentage
-    scrollPercent =
-      ((document.documentElement.scrollTop || body.scrollTop) /
-        ((document.documentElement.scrollHeight ||
-          body.scrollHeight) -
-          document.documentElement.clientHeight)) *
-      100;
-
+  const onScroll = (args) => {  
     if(args.direction == "down") {
       scroll = true;
     } else if(args.direction == "up") {
@@ -252,14 +243,6 @@ window.addEventListener("load", (event) => {
       rotation.clear();
       rotation.to(model.rotation, {y: "-=6.28318531", ease: 'none', repeat: -1, duration: 15});
     }
-  }
-
-  function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    render();
   }
 
   function render() {
